@@ -1,5 +1,4 @@
 import React from 'react'
-import { useUserContext } from '../../provider'
 import { useNavigate } from 'react-router-dom'
 import Male from '../../assets/images/Male.png'
 import Female from '../../assets/images/Female.png'
@@ -62,7 +61,7 @@ const Nav = (props) => {
                         <div className={currentUrl === "/predict" ? active : normal} onClick={() => { handleActions('predict') }}>
                             <img src={preidct} alt="predict" className='w-10 h-10 mr-1' />
                             Predic X-ray Scan</div>
-                        <div className={currentUrl === "/predict" ? active : normal} onClick={() => { handleActions('chat') }}>
+                        <div className={currentUrl === "/chat" ? active : normal} onClick={() => { handleActions('chat') }}>
                             <img src={chat} alt="chat" className='w-10 h-10 mr-1' />
                             Chat</div>
                         <div className={currentUrl === "/purchasevip" ? active : normal} onClick={() => { handleActions('purchase') }}>

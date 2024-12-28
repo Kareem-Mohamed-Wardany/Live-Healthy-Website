@@ -36,6 +36,7 @@ const SignUp = () => {
   //   specialist or consultant Data
   const [university, setUniversity] = useState("");
   const [imagePreview, setImagePreview] = useState({});
+  const [files, setFiles] = useState({});
 
   //   Radiologist Data
   const [center, setCenter] = useState("");
@@ -60,7 +61,7 @@ const SignUp = () => {
     };
 
     fetchData();
-  }, []);
+  }, [accountType]);
 
   const validate = () => {
     // First Name Validation
@@ -117,6 +118,10 @@ const SignUp = () => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0]; // Get the selected file
+    setFiles((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.files[0],
+    }))
     const reader = new FileReader();
 
     reader.onloadend = () => {
@@ -155,21 +160,41 @@ const SignUp = () => {
           Hypertension: hasHypertension,
           Allergies: hasAllergies,
         });
-      if (accountType === "specialist" || accountType === "consultant")
-        res = await axios.post("http://localhost:8080/auth/signup", {
-          mail: email,
-          password: password,
-          name: firstName + " " + lastName,
-          accountType: accountType,
-          phone: phoneNumber,
-          birth: startDate.toISOString(),
-          gender: gender,
-          university: university,
-          IDFront: imagePreview.IDFront,
-          IDBack: imagePreview.IDBack,
-          ProfFront: imagePreview.ProfessionLicenseFront,
-          ProfBack: imagePreview.ProfessionLicenseBack,
+      if (accountType === "specialist" || accountType === "consultant") {
+        const formData = new FormData();
+        formData.append("mail", email);
+        formData.append("password", password);
+        formData.append("name", `${firstName} ${lastName}`);
+        formData.append("accountType", accountType);
+        formData.append("phone", phoneNumber);
+        formData.append("birth", startDate.toISOString());
+        formData.append("gender", gender);
+        formData.append("university", university);
+        formData.append("IDFront", files.IDFront);
+        formData.append("IDBack", files.IDBack);
+        formData.append("ProfessionLicenseFront", files.ProfessionLicenseFront);
+        formData.append("ProfessionLicenseBack", files.ProfessionLicenseBack);
+        res = await axios.post("http://localhost:8080/auth/signup", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         });
+        console.log(res.data);
+      }
+      // res = await axios.post("http://localhost:8080/auth/signup", {
+      //   mail: email,
+      //   password: password,
+      //   name: firstName + " " + lastName,
+      //   accountType: accountType,
+      //   phone: phoneNumber,
+      //   birth: startDate.toISOString(),
+      //   gender: gender,
+      //   university: university,
+      //   IDFront: imagePreview.IDFront,
+      //   IDBack: imagePreview.IDBack,
+      //   ProfFront: imagePreview.ProfessionLicenseFront,
+      //   ProfBack: imagePreview.ProfessionLicenseBack,
+      // });
       if (accountType === "radiologist")
         res = await axios.post("http://localhost:8080/auth/signup", {
           mail: email,

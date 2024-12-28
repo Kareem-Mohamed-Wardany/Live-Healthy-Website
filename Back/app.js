@@ -2,7 +2,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const multer = require("multer");
 const path = require("path");
 require("dotenv").config();
 const stripe = require('stripe')(process.env.STRIPE_KEY); // Use your actual Stripe secret key
@@ -18,26 +17,7 @@ const app = express();
 
 app.use(bodyParser.json({ limit: "10mb" })); // application/json
 app.use(cors());
-const fileStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "images");
-  },
-  filename: (req, file, cb) => {
-    cb(null, new Date().toISOString() + "-" + file.originalname);
-  },
-});
 
-const fileFilter = (req, file, cb) => {
-  if (
-    file.mimetype === "image/png" ||
-    file.mimetype === "image/jpg" ||
-    file.mimetype === "image/jpeg"
-  ) {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
-};
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -48,11 +28,6 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
-app.use(
-  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
-);
-app.use("/images", express.static(path.join(__dirname, "images")));
-
 app.use("/auth", authRoutes);
 app.use("/radiology-center", radioRoutes);
 app.use("/user", userRoutes);

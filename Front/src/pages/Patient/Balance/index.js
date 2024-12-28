@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import PaymentForm from '../../components/PaymentForm';
-import Nav from '../../components/Nav';// The component with the payment form
-import cash1 from '../../assets/images/cashlvl1.png'
-import cash2 from '../../assets/images/cashlvl2.png'
-import cash3 from '../../assets/images/cashlvl3.png'
-import { useAppContext } from '../../provider';
+import PaymentForm from '../../../components/PaymentForm';
+import Nav from '../../../components/Nav';// The component with the payment form
+import cash1 from '../../../assets/images/cashlvl1.png'
+import cash2 from '../../../assets/images/cashlvl2.png'
+import cash3 from '../../../assets/images/cashlvl3.png'
+import { useAppContext } from '../../../provider';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 

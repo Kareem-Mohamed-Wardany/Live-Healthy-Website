@@ -10,7 +10,11 @@ import logo from './assets/images/Logo.png';
 // Styles
 import "react-notifications/lib/notifications.css";
 import Patient from "./pages/Patient";
-import Balance from "./pages/Balance";
+import Balance from "./pages/Patient/Balance";
+import { Chat } from "./pages/Patient/Chat";
+import { Predict } from "./pages/Patient/Predict";
+import { Prescriptions } from "./pages/Patient/Prescriptions";
+import { PurchaseVIP } from "./pages/Patient/PurchaseVIP";
 
 const queryClient = new QueryClient();
 
@@ -77,6 +81,11 @@ function App() {
                       <>
                         <Route path="/" element={<Patient user={user} />} />
                         <Route path="/mycoins" element={<Balance user={user} />} />
+                        <Route path="/chat" element={<Chat user={user} />} />
+                        <Route path="/predict" element={<Predict user={user} />} />
+                        <Route path="/myprescriptions" element={<Prescriptions user={user} />} />
+                        <Route path="/purchasevip" element={<PurchaseVIP user={user} />} />
+                        <Route path="*" element={<Navigate to="/" />} />
                       </>
                     )}
                   </>

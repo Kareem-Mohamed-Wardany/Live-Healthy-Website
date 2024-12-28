@@ -13,7 +13,7 @@ exports.signup = async function (req, res, next) {
   //   error.data = errors.array();
   //   throw error;
   // }IDBack
-  const email = req.body.mail;
+  const email = req.body.mail.lowercase();
   const name = req.body.name;
   const phone = req.body.phone;
   const birth = req.body.birth;
@@ -55,10 +55,11 @@ exports.signup = async function (req, res, next) {
   }
   if (accountType === "specialist" || accountType === "consultant") {
     const university = req.body.university;
-    const IDFront = req.body.IDFront;
-    const IDBack = req.body.IDBack;
-    const ProfFront = req.body.ProfFront;
-    const ProfBack = req.body.ProfBack;
+    const IDFront = req.files.IDFront[0].path;
+    const IDBack = req.files.IDBack[0].path;
+    const ProfFront = req.files.ProfessionLicenseFront[0].path;
+    const ProfBack = req.files.ProfessionLicenseBack[0].path;
+    console.log(IDFront)
     user = new User({
       mail: email,
       password: hashedPW,
