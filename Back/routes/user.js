@@ -6,5 +6,6 @@ const router = express.Router();
 
 router.get("/:id", userController.getUser);
 router.post("/update-balance", isAuth, userController.updateUserBalance);
+router.post("/update-vip", isAuth, userController.updateUserVip);
 
 module.exports = router;

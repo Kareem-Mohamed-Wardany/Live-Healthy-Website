@@ -1,5 +1,8 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import bronze from '../../assets/images/bronze-medal.png'
+import silver from '../../assets/images/silver-medal.png'
+import gold from '../../assets/images/gold-medal.png'
 import Male from '../../assets/images/Male.png'
 import Female from '../../assets/images/Female.png'
 import preidct from '../../assets/images/predict.png'
@@ -17,6 +20,16 @@ const Nav = (props) => {
     const normal = "w-full py-4 pl-1 flex items-center hover:cursor-pointer hover:bg-backColor text-sm sm:text-xl"
     const active = "w-full py-4 pl-1 flex items-center hover:cursor-pointer bg-backColor text-sm sm:text-xl"
     const user = props.user
+    let formattedDate;
+    if (user.vip.expireDate !== null) {
+        const endDate = new Date(user.vip.expireDate);
+        formattedDate = `${endDate.getDate()}/${endDate.getMonth() + 1}/${endDate.getFullYear()}`;
+    }
+    const vipImages = {
+        Bronze: bronze,
+        Silver: silver,
+        Gold: gold,
+    };
     console.log(currentUrl)
     const handleActions = (action) => {
         const routes = {
@@ -33,7 +46,6 @@ const Nav = (props) => {
                 navigate(0) // Reload the page after logout
             },
         };
-
         const route = routes[action];
         if (route) {
             if (typeof route === 'function') {
@@ -49,7 +61,7 @@ const Nav = (props) => {
         <>
             {user.accountType === "patient" &&
                 <>
-                    <div className='sm:w-56 w-32 h-screen bg-NavColor flex justify-start items-center flex-col'>
+                    <div className='w-34 h-[100vh] bg-NavColor flex justify-start items-center flex-col'>
                         {
                             user.gender === "male" ? (
                                 <img className='rounded w-20 h-20 object-cover text-center sm:w-24 sm:h-24' src={Male} alt="male" />
@@ -57,25 +69,32 @@ const Nav = (props) => {
                                 <img className='rounded w-20 h-20 object-cover text-center sm:w-24 sm:h-24' src={Female} alt="female" />
                             )
                         }
-                        <h1 className='text-sm sm:text-xl my-3'>{user.name}</h1>
+                        <h1 className='text-xl my-3 text-center'>{user.name}</h1>
+                        {user.vip.expireDate !== null ?
+                            <>
+                                <img src={vipImages[user.vip.level] || ""} alt="VIP" className='w-10' />
+                                <h3 className='text-xl'>{formattedDate}</h3>
+                            </> : <></>}
+
+
                         <div className={currentUrl === "/predict" ? active : normal} onClick={() => { handleActions('predict') }}>
-                            <img src={preidct} alt="predict" className='w-10 h-10 mr-1' />
-                            Predic X-ray Scan</div>
+                            <img src={preidct} alt="predict" className='w-6 h-6 mr-1' />
+                            Predic Scan</div>
                         <div className={currentUrl === "/chat" ? active : normal} onClick={() => { handleActions('chat') }}>
-                            <img src={chat} alt="chat" className='w-10 h-10 mr-1' />
+                            <img src={chat} alt="chat" className='w-6 h-6 mr-1' />
                             Chat</div>
                         <div className={currentUrl === "/purchasevip" ? active : normal} onClick={() => { handleActions('purchase') }}>
-                            <img src={Purchase} alt="Purchase VIP" className='w-10 h-10 mr-1' />
+                            <img src={Purchase} alt="Purchase VIP" className='w-6 h-6 mr-1' />
                             Purchase VIP</div>
                         <div className={currentUrl === "/myprescriptions" ? active : normal} onClick={() => { handleActions('prescription') }}>
-                            <img src={prescription} alt="Prescriptions" className='w-10 h-10 mr-1' />
-                            All My Prescriptions</div>
+                            <img src={prescription} alt="Prescriptions" className='w-6 h-6 mr-1' />
+                            Prescriptions</div>
                         <div className=' flex-grow'></div>
                         <div className={currentUrl === "/mycoins" ? active : normal} onClick={() => { handleActions('coin') }}>
-                            <img src={coin} alt="Balance" className='w-10 h-10 mr-1' />
+                            <img src={coin} alt="Balance" className='w-6 h-6 mr-1' />
                             {user.balance}</div>
                         <div className={normal} onClick={() => { handleActions('logout') }}>
-                            <img src={Logout} alt="Logout" className='w-10 h-10 mr-1' />
+                            <img src={Logout} alt="Logout" className='w-6 h-6 mr-1' />
                             Logout</div>
                     </div>
                 </>

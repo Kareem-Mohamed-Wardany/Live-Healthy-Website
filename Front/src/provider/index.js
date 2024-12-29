@@ -4,6 +4,7 @@ import {
   NotificationManager,
 } from "react-notifications";
 
+
 const AppContext = createContext(null);
 const AuthContext = createContext(null);
 const UserContext = createContext(null);
@@ -13,7 +14,6 @@ export const useAuthContext = () => useContext(AuthContext);
 export const useUserContext = () => useContext(UserContext);
 
 const typeUser = () => {
-  const userType = localStorage.getItem("userType");
   const userId = localStorage.getItem("userId");
   return { uId: userId };
 };
@@ -61,6 +61,7 @@ export const AppProvider = ({ children }) => {
         localStorage.removeItem("token");
         localStorage.removeItem("expiryDate");
         setIsLoggedIn(false);
+        window.location.reload();
       }
     }
   }, []);
