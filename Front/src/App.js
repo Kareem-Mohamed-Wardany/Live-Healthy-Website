@@ -33,8 +33,10 @@ function App() {
         setIsAuthenticating(true); // Start the authentication check
         try {
           const response = await axios.get(`http://localhost:8080/user/${userType.uId}`);
-          setUser(response.data.user);
-          console.log(response.data.user);
+          if (response.status === 200) {
+            setUser(response.data.data);
+            console.log(response.data.data);
+          }
         } catch (error) {
           createNotification("Cannot retrieve User", "error");
           setError("Failed to fetch user data.");

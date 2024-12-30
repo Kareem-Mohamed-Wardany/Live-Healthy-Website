@@ -18,7 +18,7 @@ exports.getUser = async (req, res, next) => {
 
 exports.updateUserBalance = async (req, res, next) => {
     const updatedBalance = req.body.balance;
-    const user = await User.findByIdAndUpdate(req.user.id, req.body, { new: true, runValidators: true });
+    const user = await User.findByIdAndUpdate(req.user.userId, req.body, { new: true, runValidators: true });
     if (!user)
         throw new UnauthenticatedError("Not Authorized")
     const response = new ApiResponse({
@@ -31,7 +31,7 @@ exports.updateUserBalance = async (req, res, next) => {
 exports.updateUserVip = async (req, res, next) => {
     const updatedBalance = req.body.balance;
     const { level, expireDate } = req.body.vip
-    const user = await User.findByIdAndUpdate(req.user.id, req.body, { new: true, runValidators: true });
+    const user = await User.findByIdAndUpdate(req.user.userId, req.body, { new: true, runValidators: true });
     if (!user)
         throw new UnauthenticatedError("Not Authorized")
     const response = new ApiResponse({

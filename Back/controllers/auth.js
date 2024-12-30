@@ -1,147 +1,156 @@
-const { validationResult } = require("express-validator");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+
+const { StatusCodes } = require('http-status-codes')
+const { BadRequestError, UnauthenticatedError } = require('../errors')
+const ApiResponse = require('../custom-response/ApiResponse');
 
 const User = require("../models/user");
 const RadioCenter = require("../models/radiologyCenter");
 
-exports.signup = async function (req, res, next) {
-  const errors = validationResult(req);
-  // if (!errors.isEmpty()) {
-  //   const error = new Error("Validation failed.");
-  //   error.statusCode = 422;
-  //   error.data = errors.array();
-  //   throw error;
-  // }IDBack
-  const email = req.body.mail.lowercase();
-  const name = req.body.name;
-  const phone = req.body.phone;
-  const birth = req.body.birth;
-  const gender = req.body.gender;
-  const accountType = req.body.accountType;
-  const password = req.body.password;
-  const hashedPW = await bcrypt.hash(password, 12);
-
-  let user;
-  if (accountType === "patient") {
-    const blood = req.body.bloodType;
-    const smoker = req.body.smoker || false;
-    const heartDiseases = req.body.heartDiseases || false;
-    const diabetes = req.body.diabetes || false;
-    const cancer = req.body.cancer || false;
-    const obesity = req.body.obesity || false;
-    const hypertension = req.body.hypertension || false;
-    const allergies = req.body.allergies || false;
-    user = new User({
-      mail: email,
-      password: hashedPW,
-      name: name,
-      accountType: accountType,
-      phone: phone,
-      dateOfBirth: birth,
-      gender: gender,
-      balance: 0,
-      healthStatus: {
-        bloodType: blood,
-        smoker: smoker,
-        HeartDiseases: heartDiseases,
-        Diabetes: diabetes,
-        Cancer: cancer,
-        Obesity: obesity,
-        Hypertension: hypertension,
-        Allergies: allergies,
-      },
-    });
+exports.register = async (req, res) => {
+  const { accountType } = req.body
+  let user
+  if (accountType === "radiologist") {
+    const centerName = req.body.centerName;
+    const code = req.body.code;
+    if (!centerName || !code)
+      throw new BadRequestError("Provide Center Name or Code")
+    const center = await RadioCenter.findOne({ name: centerName });
+    if (code !== center.code)
+      throw new BadRequestError("Invalid Center Code")
+    user = await User.create({ ...req.body, centerID: center._id });
   }
-  if (accountType === "specialist" || accountType === "consultant") {
-    const university = req.body.university;
+  else if (accountType === 'specialist' || accountType === 'consultant') {
     const IDFront = req.files.IDFront[0].path;
     const IDBack = req.files.IDBack[0].path;
     const ProfFront = req.files.ProfessionLicenseFront[0].path;
     const ProfBack = req.files.ProfessionLicenseBack[0].path;
-    console.log(IDFront)
-    user = new User({
-      mail: email,
-      password: hashedPW,
-      name: name,
-      accountType: accountType,
-      phone: phone,
-      dateOfBirth: birth,
-      gender: gender,
-      docData: {
-        university: university,
-        IDFront: IDFront,
-        IDBack: IDBack,
-        ProfFront: ProfFront,
-        ProfBack: ProfBack,
-        verified: false,
-      },
-    });
-
-    if (accountType === "radiologist") {
-      const centerName = req.body.centerName;
-      const code = req.body.code;
-      const center = await RadioCenter.findOne({ name: centerName });
-      if (code !== center.code)
-        res.status(404).json({ message: "Invalid Code" });
-      user = new User({
-        mail: email,
-        password: hashedPW,
-        name: name,
-        accountType: accountType,
-        phone: phone,
-        dateOfBirth: birth,
-        gender: gender,
-        centerID: center._id,
-      });
-    }
+    user = await User.create({ ...req.body, docDate: { ...docData, IDBack, IDBack, ProfFront, ProfBack } });
   }
-  const result = await user.save();
-  if (result)
-    res
-      .status(201)
-      .json({ message: "User created!", userId: result._id, user: result });
-  else {
-    const error = new Error("Failed to create user.");
-    error.statusCode = 500;
-    throw error;
-  }
+  else
+    user = await User.create({ ...req.body });
+  const token = user.createJWT();
+  const response = new ApiResponse({
+    msg: 'Radiologist registered successfully',
+    data: { user: { _id: user._id, accountType: user.accountType }, token },
+    statusCode: StatusCodes.CREATED,
+  });
+  res.status(response.statusCode).json(response);
 };
 
-exports.login = async function (req, res, next) {
-  const { email, password } = req.body;
+exports.login = async (req, res) => {
+  const { mail, password } = req.body;
 
-  try {
-    const loadedUser = await User.findOne({ mail: email });
-    if (!loadedUser) {
-      const error = new Error("A user with this email could not be found.");
-      error.statusCode = 401;
-      throw error;
-    }
-
-    const isEqual = await bcrypt.compare(password, loadedUser.password);
-    if (!isEqual) {
-      const error = new Error("Wrong password!");
-      error.statusCode = 401;
-      throw error;
-    }
-
-    const token = jwt.sign(
-      {
-        mail: loadedUser.mail,
-        userId: loadedUser._id.toString(),
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-
-    res.status(200).json({
-      token,
-      userId: loadedUser._id.toString(),
-      userType: loadedUser.accountType,
-    });
-  } catch (err) {
-    if (!err.statusCode) err.statusCode = 500;
-    next(err);
+  if (!mail || !password) {
+    throw new BadRequestError('Please provide email and password');
   }
+
+  const user = await User.findOne({ mail });
+  if (!user) {
+    throw new UnauthenticatedError('Invalid Credentials');
+  }
+
+  const isPasswordCorrect = await user.comparePassword(password);
+  if (!isPasswordCorrect) {
+    throw new UnauthenticatedError('Invalid Credentials');
+  }
+
+  const token = user.createJWT();
+  const response = new ApiResponse({
+    msg: 'User logged in successfully',
+    data: { user: { userId: user._id, accountType: user.accountType }, token },
+    statusCode: StatusCodes.OK,
+  });
+  res.status(response.statusCode).json(response);
 };
+
+// exports.signup = async function (req, res, next) {
+
+//   const email = req.body.mail.lowercase();
+//   const name = req.body.name;
+//   const phone = req.body.phone;
+//   const birth = req.body.birth;
+//   const gender = req.body.gender;
+//   const accountType = req.body.accountType;
+//   const password = req.body.password;
+//   const hashedPW = await bcrypt.hash(password, 12);
+
+// untType === "specialist" || accountType === "consultant") {
+//   const university = req.body.university;
+//   const IDFront = req.files.IDFront[0].path;
+//   const IDBack = req.files.IDBack[0].path;
+//   const ProfFront = req.files.ProfessionLicenseFront[0].path;
+//   const ProfBack = req.files.ProfessionLicenseBack[0].path;
+//   console.log(IDFront)
+//   user = new User({
+//     mail: email,
+//     password: hashedPW,
+//     name: name,
+//     accountType: accountType,
+//     phone: phone,
+//     dateOfBirth: birth,
+//     gender: gender,
+//     docData: {
+//       university: university,
+//       IDFront: IDFront,
+//       IDBack: IDBack,
+//       ProfFront: ProfFront,
+//       ProfBack: ProfBack,
+//     },
+//   });
+// }
+// if (accountType === "radiologist") {
+//   const centerName = req.body.centerName;
+//   const code = req.body.code;
+//   const center = await RadioCenter.findOne({ name: centerName });
+//   if (code !== center.code)
+//     res.status(404).json({ message: "Invalid Code" });
+//   user = new User({
+//     mail: email,
+//     password: hashedPW,
+//     name: name,
+//     accountType: accountType,
+//     phone: phone,
+//     dateOfBirth: birth,
+//     gender: gender,
+//     centerID: center._id,
+//   });
+// }
+
+
+// exports.login = async function (req, res, next) {
+//   const { email, password } = req.body;
+
+//   try {
+//     const loadedUser = await User.findOne({ mail: email });
+//     if (!loadedUser) {
+//       const error = new Error("A user with this email could not be found.");
+//       error.statusCode = 401;
+//       throw error;
+//     }
+
+//     const isEqual = await bcrypt.compare(password, loadedUser.password);
+//     if (!isEqual) {
+//       const error = new Error("Wrong password!");
+//       error.statusCode = 401;
+//       throw error;
+//     }
+
+//     const token = jwt.sign(
+//       {
+//         mail: loadedUser.mail,
+//         userId: loadedUser._id.toString(),
+//       },
+//       process.env.JWT_SECRET,
+//       { expiresIn: "1h" }
+//     );
+
+//     res.status(200).json({
+//       token,
+//       userId: loadedUser._id.toString(),
+//       userType: loadedUser.accountType,
+//     });
+//   } catch (err) {
+//     if (!err.statusCode) err.statusCode = 500;
+//     next(err);
+//   }
+// };

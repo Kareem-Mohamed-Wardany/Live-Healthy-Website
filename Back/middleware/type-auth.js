@@ -1,9 +1,10 @@
-const { UnauthorizedError } = require('../errors');
+const { UnauthenticatedError } = require('../errors');
+
 
 const authorizeRoles = (...allowedRoles) => {
     return (req, res, next) => {
-        if (!allowedRoles.includes(req.user.role)) {
-            throw new UnauthorizedError('Access denied');
+        if (!allowedRoles.includes(req.user.accountType)) {
+            throw new UnauthenticatedError('Access denied');
         }
         next();
     };

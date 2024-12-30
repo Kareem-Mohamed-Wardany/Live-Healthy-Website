@@ -14,7 +14,7 @@ import logo from "../../assets/images/TitleImage.png";
 
 const Login = () => {
   const { createNotification, setIsLoading } = useAppContext();
-  const [data, setData] = useState({ email: "", password: "" });
+  const [data, setData] = useState({ mail: "", password: "" });
 
   const navigate = useNavigate();
 
@@ -25,16 +25,18 @@ const Login = () => {
 
   const handdleButtonClick = async (e) => {
     e.preventDefault();
+
+    if (!data.mail || !data.password) {
+      createNotification("Please Enter valid mail and Password", "warning");
+      return;
+    }
     try {
-      if (!data.email || !data.password) {
-        createNotification("Please Enter valid Email and Password", "warning");
-        return;
-      }
+
       const res = await axios.post("http://localhost:8080/auth/login", data);
-      console.log(res);
-      if (res.status === 200) {
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("userId", res.data.userId);
+      if (res.status === 200 || res.statusCode === 200) {
+        console.log(res);
+        localStorage.setItem("token", res.data.data.token);
+        localStorage.setItem("userId", res.data.data.user.userId);
         const remainingMilliseconds = 60 * 60 * 1000;
         const expiryDate = new Date(
           new Date().getTime() + remainingMilliseconds
@@ -42,14 +44,16 @@ const Login = () => {
         localStorage.setItem("expiryDate", expiryDate.toISOString());
         console.log("Navigating to /");
         navigate(0);
-      } else {
-        createNotification("Wrong Email or Password", "error");
+      } if (res.status === 401 || res.statusCode === 401) {
+        createNotification("Wrong mail or Password", "error");
         return;
       }
-    } catch (error) {
-      createNotification(error, "error");
-      return;
     }
+    catch (error) {
+      createNotification(error.response.data.msg, "error");
+    }
+
+
   };
 
   return (
@@ -64,8 +68,8 @@ const Login = () => {
             className="outline-none rounded-md p-1 shadow-custom gap-1 text-3xl pl-2"
             type="text"
             placeholder="Email"
-            value={data.email}
-            onChange={(e) => setData({ ...data, email: e.target.value })}
+            value={data.mail}
+            onChange={(e) => setData({ ...data, mail: e.target.value })}
           />
         </div>
         <div className="flex flex-col mb-2">

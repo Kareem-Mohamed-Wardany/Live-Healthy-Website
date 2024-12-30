@@ -20,7 +20,7 @@ function Balance(props) {
     const [amount, setAmount] = useState(0)
     const [isPaying, setIsPaying] = useState(false)
     const [isSuccessful, setIsSuccessful] = useState(false)
-    const [price, setPrice] = useState(true)
+    const [price, setPrice] = useState(0)
     const user = props.user
     const menuItems = [
         { levelIcon: cash1, price: 7, balance: 100 },
@@ -34,7 +34,6 @@ function Balance(props) {
             const res = await axios.post(
                 'http://localhost:8080/user/update-balance',
                 {
-                    id: user._id, // User ID
                     balance: balance // New balance
                 },
                 {
@@ -45,10 +44,12 @@ function Balance(props) {
             );
 
             console.log(res)
-            if (res.status === 200) {
-                createNotification(`Payment successful! Add ${amount} coins for $${price}`, "success");
+            if (res.status === 200 || res.statusCode === 200) {
+                createNotification(`Payment successful! Add ${amount} coins for $${price / 100}`, "success");
                 setIsSuccessful(false)
-                navigate(0)
+                setTimeout(() => {
+                    navigate(0); // Call navigate(0) after 30 seconds
+                }, 6000);
             }
         }
         if (isSuccessful) {

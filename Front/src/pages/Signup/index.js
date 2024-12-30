@@ -151,14 +151,16 @@ const SignUp = () => {
           phone: phoneNumber,
           birth: startDate.toISOString(),
           gender: gender,
-          bloodType: bloodType,
-          smoker: isSmoker,
-          HeartDiseases: hasHeartDiseases,
-          Diabetes: hasDiabetes,
-          Cancer: hasCancer,
-          Obesity: hasObesity,
-          Hypertension: hasHypertension,
-          Allergies: hasAllergies,
+          healthStatus: {
+            bloodType: bloodType,
+            smoker: isSmoker,
+            HeartDiseases: hasHeartDiseases,
+            Diabetes: hasDiabetes,
+            Cancer: hasCancer,
+            Obesity: hasObesity,
+            Hypertension: hasHypertension,
+            Allergies: hasAllergies,
+          },
         });
       if (accountType === "specialist" || accountType === "consultant") {
         const formData = new FormData();
@@ -169,7 +171,7 @@ const SignUp = () => {
         formData.append("phone", phoneNumber);
         formData.append("birth", startDate.toISOString());
         formData.append("gender", gender);
-        formData.append("university", university);
+        formData.append("docData.university", university);
         formData.append("IDFront", files.IDFront);
         formData.append("IDBack", files.IDBack);
         formData.append("ProfessionLicenseFront", files.ProfessionLicenseFront);

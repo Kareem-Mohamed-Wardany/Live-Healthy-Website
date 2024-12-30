@@ -63,7 +63,7 @@ const Nav = (props) => {
                 <>
                     <div className='w-34 h-[100vh] bg-NavColor flex justify-start items-center flex-col'>
                         {
-                            user.gender === "male" ? (
+                            user.gender === "Male" ? (
                                 <img className='rounded w-20 h-20 object-cover text-center sm:w-24 sm:h-24' src={Male} alt="male" />
                             ) : (
                                 <img className='rounded w-20 h-20 object-cover text-center sm:w-24 sm:h-24' src={Female} alt="female" />

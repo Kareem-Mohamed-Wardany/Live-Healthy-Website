@@ -1,5 +1,4 @@
 const express = require("express");
-const { body } = require("express-validator");
 const multer = require("multer");
 
 const User = require("../models/user");
@@ -27,9 +26,7 @@ router.post(
     { name: "IDBack", maxCount: 1 },
     { name: "ProfessionLicenseFront", maxCount: 1 },
     { name: "ProfessionLicenseBack", maxCount: 1 },
-  ]),
-  authController.signup
-);
+  ]), authController.register);
 
 router.post("/login", authController.login);
 

@@ -65,17 +65,20 @@ const userSchema = new Schema({
   vip: {
     level: {
       type: String,
-      default: 'Basic',
-      required: function () {
-        return this.accountType === 'patient';
+      default: function () {
+        if (this.accountType === 'patient') {
+          return 'Basic'
+        }
       },
     },
     expireDate: {
-      type: String,
-      default: null,
-      required: function () {
-        return this.accountType === 'patient';
+      type: Date,
+      default: function () {
+        if (this.accountType === 'patient') {
+          return null
+        }
       },
+
     },
   },
   centerID: {
@@ -120,10 +123,11 @@ const userSchema = new Schema({
     },
     verified: {
       type: Boolean,
-      default: false,
-      required: function () {
-        return ['specialist', 'consultant'].includes(this.accountType);
-      },
+      default: function () {
+        if (this.accountType === 'specialist' || this.accountType === 'consultant') {
+          return false
+        }
+      }
     },
   },
   healthStatus: {

@@ -26,7 +26,7 @@ const checkExpire = () => {
 };
 export const AppProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userType, setUserType] = useState({ utype: null, uId: null });
+  const [userType, setUserType] = useState({ uId: null });
   const [isLoading, setIsLoading] = useState(false);
 
   const createNotification = (message = "", type = "error") => {
@@ -57,7 +57,7 @@ export const AppProvider = ({ children }) => {
       }
       // If token is expired, remove it from local storage and set isLoggedIn to false
       else {
-        setUserType({ utype: null, uId: null });
+        setUserType({ uId: null });
         localStorage.removeItem("token");
         localStorage.removeItem("expiryDate");
         setIsLoggedIn(false);
