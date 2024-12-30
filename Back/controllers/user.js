@@ -1,43 +1,43 @@
 const User = require("../models/user");
+const { StatusCodes } = require('http-status-codes');
+const { BadRequestError, NotFoundError, UnauthenticatedError } = require('../errors');
+const ApiResponse = require('../custom-response/ApiResponse');
 
 exports.getUser = async (req, res, next) => {
     const userId = req.params.id;
-    console.log(userId);
     const user = await User.findById(userId);
-    if (!user) {
-        const error = new Error("User not found.");
-        error.statusCode = 404;
-        throw error;
-    }
-    res.status(200).json({ user: user.toObject({ getters: true }) });
+    if (!user)
+        throw new UnauthenticatedError("Not Authorized")
+    const response = new ApiResponse({
+        msg: "user retrieved successfully",
+        data: user,
+        statusCode: StatusCodes.OK,
+    });
+    res.status(response.statusCode).json(response);
 };
 
 exports.updateUserBalance = async (req, res, next) => {
-    const userId = req.body.id;
     const updatedBalance = req.body.balance;
-    const user = await User.findByIdAndUpdate(userId, { balance: updatedBalance }, { new: true });
-    if (!user) {
-        const error = new Error("User not found.");
-        error.statusCode = 404;
-        throw error;
-    }
-    res.status(200).json({ message: "User balance updated successfully" });
+    const user = await User.findByIdAndUpdate(req.user.id, req.body, { new: true, runValidators: true });
+    if (!user)
+        throw new UnauthenticatedError("Not Authorized")
+    const response = new ApiResponse({
+        msg: "Balance updated successfully",
+        data: null,
+        statusCode: StatusCodes.OK,
+    });
+    res.status(response.statusCode).json(response);
 }
 exports.updateUserVip = async (req, res, next) => {
-    const userId = req.body.id;
     const updatedBalance = req.body.balance;
     const { level, expireDate } = req.body.vip
-    const user = await User.findByIdAndUpdate(userId, {
-        balance: updatedBalance,
-        vip: {
-            level,
-            expireDate
-        }
-    }, { new: true });
-    if (!user) {
-        const error = new Error("User not found.");
-        error.statusCode = 404;
-        throw error;
-    }
-    res.status(200).json({ message: "User VIP updated successfully" });
+    const user = await User.findByIdAndUpdate(req.user.id, req.body, { new: true, runValidators: true });
+    if (!user)
+        throw new UnauthenticatedError("Not Authorized")
+    const response = new ApiResponse({
+        msg: "User VIP updated successfully",
+        data: null,
+        statusCode: StatusCodes.OK,
+    });
+    res.status(response.statusCode).json(response);
 }

@@ -1,14 +1,21 @@
 const RadiologyCenter = require("../models/radiologyCenter");
+const { StatusCodes } = require('http-status-codes');
+const { BadRequestError, NotFoundError } = require('../errors');
+const ApiResponse = require('../custom-response/ApiResponse');
 
 exports.getAllRadiologyCenters = async (req, res, next) => {
-  try {
-    const radiologyCenters = await RadiologyCenter.find();
-    console.log(radiologyCenters);
-    res.status(200).json({ radiologyCenters });
-  } catch (err) {
-    if (!err.statusCode) err.statusCode = 500;
-    next(err);
+
+  const radiologyCenters = await RadiologyCenter.find();
+  if (!radiologyCenters) {
+    throw new NotFoundError("No radiology centers found");
   }
+  const response = new ApiResponse({
+    msg: "Radiology centers retrieved successfully",
+    data: radiologyCenters,
+    statusCode: StatusCodes.OK,
+  });
+  res.status(response.statusCode).json(response);
+
 };
 
 const generateCode = () => {
@@ -26,20 +33,12 @@ const generateCode = () => {
 
 exports.addRadiologyCenter = async (req, res, next) => {
   const code = generateCode();
-  const radiologyCenter = new RadiologyCenter({
-    name: req.body.name,
-    address: req.body.address,
-    phone: req.body.phone,
-    mail: req.body.mail,
-    code: code,
+  req.body.code = code;
+  const radiologyCenter = await RadiologyCenter.create(req.body);
+  const response = new ApiResponse({
+    msg: "Radiology center created successfully",
+    data: radiologyCenter,
+    statusCode: StatusCodes.CREATED,
   });
-  const result = await radiologyCenter.save();
-  if (!result) {
-    const error = new Error("Something went wrong while saving center");
-    error.statusCode = 500;
-    throw error;
-  }
-  res
-    .status(201)
-    .json({ message: "Radiology Center added successfully", code: code });
+  res.status(response.statusCode).json(response);
 };

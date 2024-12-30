@@ -4,9 +4,12 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const path = require("path");
 require("dotenv").config();
+require('express-async-errors');
 const stripe = require('stripe')(process.env.STRIPE_KEY); // Use your actual Stripe secret key
 
-
+// error handlers
+const notFoundMiddleware = require('./middleware/not-found');
+const errorHandlerMiddleware = require('./middleware/error-handler');
 
 // Define Routes
 const authRoutes = require("./routes/auth");
@@ -15,7 +18,6 @@ const userRoutes = require("./routes/user");
 
 const app = express();
 
-app.use(bodyParser.json({ limit: "10mb" })); // application/json
 app.use(cors());
 
 
@@ -31,14 +33,6 @@ app.use((req, res, next) => {
 app.use("/auth", authRoutes);
 app.use("/radiology-center", radioRoutes);
 app.use("/user", userRoutes);
-
-app.use((error, req, res, next) => {
-  console.log(error);
-  const status = error.statusCode || 500;
-  const message = error.message;
-  const data = error.data;
-  res.status(status).json({ message: message, data: data });
-});
 
 // Route to create a PaymentIntent
 app.post('/purchase', async (req, res) => {
@@ -58,6 +52,9 @@ app.post('/purchase', async (req, res) => {
   }
 });
 
+
+app.use(notFoundMiddleware);
+app.use(errorHandlerMiddleware);
 
 mongoose
   .connect(process.env.DB_CONNECTION)

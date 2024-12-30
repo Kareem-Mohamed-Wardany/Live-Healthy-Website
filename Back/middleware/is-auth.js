@@ -1,26 +1,20 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken')
+const { UnauthenticatedError } = require('../errors')
 
-
-module.exports = (req, res, next) => {
-  const authHeader = req.get("Authorization");
-  if (!authHeader) {
-    const error = new Error("Not authenticated.");
-    error.statusCode = 401;
-    throw error;
+const auth = async (req, res, next) => {
+  const authHeader = req.headers.authorization
+  if (!authHeader || !authHeader.startsWith('Bearer')) {
+    throw new UnauthenticatedError('Authentication invalid')
   }
-  const token = authHeader.split(" ")[1];
-  let decodedToken;
+  const token = authHeader.split(' ')[1]
+
   try {
-    decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-  } catch (err) {
-    err.statusCode = 500;
-    throw err;
+    const payload = jwt.verify(token, process.env.JWT_SECRET)
+    req.user = { userId: payload.userId, accountType: payload.accountType }
+    next()
+  } catch (error) {
+    throw new UnauthenticatedError('Authentication invalid')
   }
-  if (!decodedToken) {
-    const error = new Error("Not authenticated.");
-    error.statusCode = 401;
-    throw error;
-  }
-  req.userId = decodedToken.userId;
-  next();
-};
+}
+
+module.exports = auth
