@@ -1,102 +1,182 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import bronze from '../../assets/images/bronze-medal.png'
-import silver from '../../assets/images/silver-medal.png'
-import gold from '../../assets/images/gold-medal.png'
+import React, { useState } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import Male from '../../assets/images/Male.png'
 import Female from '../../assets/images/Female.png'
-import preidct from '../../assets/images/predict.png'
-import chat from '../../assets/images/chat.png'
-import Purchase from '../../assets/images/vip.png'
 import coin from '../../assets/images/coin.png'
-import prescription from '../../assets/images/clipboard.png'
-import Logout from '../../assets/images/logout.png'
-import { useLocation } from 'react-router-dom'
+import logo from "../../assets/images/Logo.png"
+
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const Nav = (props) => {
     const location = useLocation();
-    const currentUrl = location.pathname;
     const navigate = useNavigate();
-    const normal = "w-full py-4 pl-1 flex items-center hover:cursor-pointer hover:bg-backColor text-sm sm:text-xl"
-    const active = "w-full py-4 pl-1 flex items-center hover:cursor-pointer bg-backColor text-sm sm:text-xl"
     const user = props.user
-    let formattedDate;
-    if (user.vip.expireDate !== null) {
-        const endDate = new Date(user.vip.expireDate);
-        formattedDate = `${endDate.getDate()}/${endDate.getMonth() + 1}/${endDate.getFullYear()}`;
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    const toggleMenu = () => {
+        setMenuOpen(!menuOpen);
+    };
+    const logout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('expiryDate');
+        navigate(0);
     }
-    const vipImages = {
-        Bronze: bronze,
-        Silver: silver,
-        Gold: gold,
-    };
-    console.log(currentUrl)
-    const handleActions = (action) => {
-        const routes = {
-            'predict': '/predict',
-            'chat': '/chat',
-            'purchase': '/purchasevip',
-            'prescription': '/myprescriptions',
-            'coin': '/mycoins',
-            'logout': () => {
-                localStorage.removeItem('token');
-                localStorage.removeItem('expiryDate');
-                localStorage.removeItem('userId');
-                navigate('/');
-                navigate(0) // Reload the page after logout
-            },
-        };
-        const route = routes[action];
-        if (route) {
-            if (typeof route === 'function') {
-                route(); // Execute logout function
-            } else {
-                navigate(route); // Navigate to respective route
-            }
-        }
-    };
 
 
     return (
         <>
             {user.accountType === "patient" &&
                 <>
-                    <div className='w-34 h-[100vh] bg-NavColor flex justify-start items-center flex-col'>
-                        {
-                            user.gender === "Male" ? (
-                                <img className='rounded w-20 h-20 object-cover text-center sm:w-24 sm:h-24' src={Male} alt="male" />
-                            ) : (
-                                <img className='rounded w-20 h-20 object-cover text-center sm:w-24 sm:h-24' src={Female} alt="female" />
-                            )
-                        }
-                        <h1 className='text-xl my-3 text-center'>{user.name}</h1>
-                        {user.vip.expireDate !== null ?
-                            <>
-                                <img src={vipImages[user.vip.level] || ""} alt="VIP" className='w-10' />
-                                <h3 className='text-xl'>{formattedDate}</h3>
-                            </> : <></>}
+                    <nav className="w-full bg-NavColor flex justify-between items-center p-4">
+                        {/* Logo and Title */}
+                        <div className="flex items-center">
+                            <img src={logo} alt="Live Healthy" className="w-12 h-12" />
+                        </div>
+
+                        {/* Navigation Links - Hidden on small screens, shown on larger screens */}
+                        <ul className="hidden md:flex space-x-6 text-white">
+                            <li>
+                                <a
+                                    href="/predict"
+                                    className={`hover:text-blue-400 ${location.pathname === "/predict" ? "text-blue-500 font-bold" : ""}`}
+                                >
+                                    Predict
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="/chat"
+                                    className={`hover:text-blue-400 ${location.pathname === "/chat" ? "text-blue-500 font-bold" : ""}`}
+                                >
+                                    Chat
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="/purchasevip"
+                                    className={`hover:text-blue-400 ${location.pathname === "/purchasevip" ? "text-blue-500 font-bold" : ""}`}
+                                >
+                                    Purchase VIP
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="/myprescriptions"
+                                    className={`hover:text-blue-400 ${location.pathname === "/myprescriptions" ? "text-blue-500 font-bold" : ""}`}
+                                >
+                                    Prescriptions
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="/mycoins"
+                                    className={`hover:text-blue-400 ${location.pathname === "/mycoins" ? "text-blue-500 font-bold" : ""}`}
+                                >
+                                    Coins
+                                </a>
+                            </li>
+                        </ul>
+                        {/* User Profile Image and Logout Button */}
+                        <div className="flex items-center space-x-3">
+                            {
+                                user.gender === "Male" ? (
+                                    <img
+                                        className={`rounded-full w-10 h-10 object-cover border-2 ${user.vip.level === 'Gold'
+                                            ? 'border-yellow-500'   // Gold border
+                                            : user.vip.level === 'Silver'
+                                                ? 'border-gray-300'    // Silver border
+                                                : user.vip.level === 'Bronze'
+                                                    ? 'border-orange-500'  // Bronze border
+                                                    : 'border-transparent' // Default if no level is set
+                                            }`}
+                                        src={Male}
+                                        alt="Male Avatar"
+                                    />
+
+                                ) : (
+                                    <img
+                                        className={`rounded-full w-10 h-10 object-cover border-4 ${user.vip.level === 'gold'
+                                            ? 'border-yellow-500'   // Gold border
+                                            : user.vip.level === 'silver'
+                                                ? 'border-gray-300'    // Silver border
+                                                : user.vip.level === 'bronze'
+                                                    ? 'border-orange-500'  // Bronze border
+                                                    : 'border-transparent' // Default if no level is set
+                                            }`}
+                                        src={Female}
+                                        alt="Female Avatar"
+                                    />
+
+                                )
+                            }
+                            <div className="flex items-center space-x-1">
+                                <img src={coin} alt="Coin" className="w-5 h-5" />
+                                <span className="text-white text-sm font-semibold">{user.balance}</span>
+                            </div>
+                            <button className="text-white px-4 py-2 bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500" onClick={logout}>
+
+                                Logout
+                            </button>
+                        </div>
+
+                        {/* Hamburger Menu - Visible on small screens */}
+                        <div className="md:hidden flex items-center">
+                            <button onClick={toggleMenu} className="text-white">
+                                <i className="fas fa-bars"></i> {/* Add a hamburger icon */}
+                            </button>
+                        </div>
+
+                        {/* Mobile Menu - Hidden by default, shown when toggled */}
+                        <div className={`md:hidden ${menuOpen ? 'block' : 'hidden'} absolute top-16 left-0 w-full bg-NavColor p-4`}>
+                            <ul className="space-y-4 text-white">
+                                <li>
+                                    <a
+                                        href="/predict"
+                                        className={`hover:text-blue-400 ${location.pathname === "/predict" ? "text-blue-500 font-bold" : ""}`}
+                                    >
+                                        Predict
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        href="/chat"
+                                        className={`hover:text-blue-400 ${location.pathname === "/chat" ? "text-blue-500 font-bold" : ""}`}
+                                    >
+                                        Chat
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        href="/purchasevip"
+                                        className={`hover:text-blue-400 ${location.pathname === "/purchasevip" ? "text-blue-500 font-bold" : ""}`}
+                                    >
+                                        Purchase VIP
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        href="/myprescriptions"
+                                        className={`hover:text-blue-400 ${location.pathname === "/myprescriptions" ? "text-blue-500 font-bold" : ""}`}
+                                    >
+                                        Prescriptions
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        href="/mycoins"
+                                        className={`hover:text-blue-400 ${location.pathname === "/mycoins" ? "text-blue-500 font-bold" : ""}`}
+                                    >
+                                        Coins
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
 
 
-                        <div className={currentUrl === "/predict" ? active : normal} onClick={() => { handleActions('predict') }}>
-                            <img src={preidct} alt="predict" className='w-6 h-6 mr-1' />
-                            Predic Scan</div>
-                        <div className={currentUrl === "/chat" ? active : normal} onClick={() => { handleActions('chat') }}>
-                            <img src={chat} alt="chat" className='w-6 h-6 mr-1' />
-                            Chat</div>
-                        <div className={currentUrl === "/purchasevip" ? active : normal} onClick={() => { handleActions('purchase') }}>
-                            <img src={Purchase} alt="Purchase VIP" className='w-6 h-6 mr-1' />
-                            Purchase VIP</div>
-                        <div className={currentUrl === "/myprescriptions" ? active : normal} onClick={() => { handleActions('prescription') }}>
-                            <img src={prescription} alt="Prescriptions" className='w-6 h-6 mr-1' />
-                            Prescriptions</div>
-                        <div className=' flex-grow'></div>
-                        <div className={currentUrl === "/mycoins" ? active : normal} onClick={() => { handleActions('coin') }}>
-                            <img src={coin} alt="Balance" className='w-6 h-6 mr-1' />
-                            {user.balance}</div>
-                        <div className={normal} onClick={() => { handleActions('logout') }}>
-                            <img src={Logout} alt="Logout" className='w-6 h-6 mr-1' />
-                            Logout</div>
-                    </div>
+
+
                 </>
             }
         </>
@@ -105,26 +185,3 @@ const Nav = (props) => {
 }
 
 export default Nav
-
-// {
-//     "user": {
-//         "vip": {
-//             "level": "Basic",
-//             "expireDate": null
-//         },
-//         "healthStatus": {
-//             "bloodType": "A+",
-//             "smoker": false
-//         },
-//         "_id": "676fcb1afa82e6d163972480",
-//         "name": "Kareem Wardany",
-//         "accountType": "patient",
-//         "phone": "01144106127",
-//         "mail": "kareemwarday111@gmail.com",
-//         "dateOfBirth": "2001-04-05T22:00:00.000Z",
-//         "gender": "male",
-//         "password": "$2a$12$w8bYeUlAEv0JhYBObyqw5eZpypfKGKWQ0uP1bBDP32TiTOhPC3gR2",
-//         "__v": 0,
-//         "id": "676fcb1afa82e6d163972480"
-//     }
-// }

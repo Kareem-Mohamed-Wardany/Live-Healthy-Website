@@ -11,7 +11,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const exten = file.mimetype.split('/')[1]
-    const username = req.body.mail.lowercase() || "unknown"; // Fallback if username is not provided
+    const username = req.body.mail || "unknown"; // Fallback if username is not provided
     const fieldName = `${username}-${file.fieldname}`; // Dynamic field name
     cb(null, fieldName + "." + exten);
   },

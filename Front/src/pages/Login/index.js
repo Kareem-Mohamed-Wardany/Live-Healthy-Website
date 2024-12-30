@@ -57,15 +57,15 @@ const Login = () => {
   };
 
   return (
-    <div className="center flex flex-col items-center">
-      <Link to="/">
-        <img src={logo} alt="Live=Healthy Logo" className="w-60"></img>
-      </Link>
+    <div className="bg-gray-50 p-6 rounded-lg shadow-lg w-full max-w-2xl mx-auto center">
+      < Link to="/" className="flex justify-center" >
+        <img src={logo} alt="Live=Healthy Logo" className="w-48"></img>
+      </Link >
       <div>
         <div className="flex flex-col mb-2">
-          <label className="text-3xl mb-1">Email</label>
+          <label className="block text-lg font-medium text-gray-700 mb-2">Email</label>
           <input
-            className="outline-none rounded-md p-1 shadow-custom gap-1 text-3xl pl-2"
+            className="outline-none w-full rounded-lg p-3 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-700"
             type="text"
             placeholder="Email"
             value={data.mail}
@@ -73,9 +73,9 @@ const Login = () => {
           />
         </div>
         <div className="flex flex-col mb-2">
-          <label className="text-3xl mb-1">Password</label>
+          <label className="block text-lg font-medium text-gray-700 mb-2">Password</label>
           <input
-            className="outline-none rounded-md p-1 shadow-custom gap-1 text-3xl pl-2"
+            className="outline-none w-full rounded-lg p-3 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-700"
             type="password"
             placeholder="Password"
             value={data.password}
@@ -85,26 +85,29 @@ const Login = () => {
       </div>
       <div className="flex justify-end w-full">
         <Link to="/forget-password">
-          <label className="text-lg">forget your password?</label>
+          <label className="text-lg text-blue-600 cursor-pointer hover:underline">
+            Forgot your password?
+          </label>
+
         </Link>
       </div>
       <div className="my-3 flex justify-evenly w-full">
         <button
           onClick={handdleButtonClick}
-          className="bg-white w-32 rounded-md hover:bg-primary-light hover:text-white text-2xl"
+          className="px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
         >
           Login
         </button>
         <Link to="/signup">
           <button
             onClick={handdleSignUpButtonClick}
-            className="bg-white w-32 rounded-md hover:bg-primary-light hover:text-white text-2xl"
+            className="px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           >
             sign up
           </button>
         </Link>
       </div>
-    </div>
+    </div >
   );
 };
 

@@ -20,17 +20,19 @@ exports.register = async (req, res) => {
     user = await User.create({ ...req.body, centerID: center._id });
   }
   else if (accountType === 'specialist' || accountType === 'consultant') {
+    const university = req.body.university
     const IDFront = req.files.IDFront[0].path;
     const IDBack = req.files.IDBack[0].path;
     const ProfFront = req.files.ProfessionLicenseFront[0].path;
     const ProfBack = req.files.ProfessionLicenseBack[0].path;
-    user = await User.create({ ...req.body, docDate: { ...docData, IDBack, IDBack, ProfFront, ProfBack } });
+    req.body.docData = { university, IDFront, IDBack, ProfFront, ProfBack }
+    user = await User.create({ ...req.body });
   }
   else
     user = await User.create({ ...req.body });
   const token = user.createJWT();
   const response = new ApiResponse({
-    msg: 'Radiologist registered successfully',
+    msg: 'User registered successfully',
     data: { user: { _id: user._id, accountType: user.accountType }, token },
     statusCode: StatusCodes.CREATED,
   });

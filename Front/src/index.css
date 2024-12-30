@@ -11,6 +11,3 @@ body {
   @apply bg-backColor;
   @apply h-[100vh];
 }
-.app-container {
-  @apply flex;
-}

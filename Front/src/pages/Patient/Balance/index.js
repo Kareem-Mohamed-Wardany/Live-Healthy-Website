@@ -61,37 +61,50 @@ function Balance(props) {
     return (
         <>
             <Nav user={user} />
-            <div className='w-[70%] mt-2 sm:w-[80%]'>
-                <h1 className='text-center text-3xl font-extrabold text-primary'> Purchase Credits</h1>
-                <div className='flex flex-wrap justify-center'>
-                    <>
-                        {menuItems.map((item) => {
-                            return (
-                                <div key={item.levelIcon} className='flex flex-col items-center justify-center gap-1 w-64 h-auto p-4 bg-gray-50 border border-gray-300 rounded-xl shadow-xl m-2'>
-                                    <img src={item.levelIcon} alt='cash level' className='w-[60px] h-[60px] object-contain mb-4' />
-                                    <p className='text-xl font-bold text-gray-700'>${item.price}</p>
-                                    <p className='text-sm text-gray-500'>{item.balance} Coins</p>
-                                    <button
-                                        onClick={() => {
-                                            setIsPaying(true);
-                                            setAmount(item.balance);
-                                            setPrice(item.price * 100);
-                                        }}
-                                        className='mt-4 bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-400 hover:to-teal-400 text-white font-medium rounded-lg py-3 px-6 transition duration-300'
-                                    >
-                                        Purchase
-                                    </button>
-                                </div>
-                            )
-                        })}
-                    </>
+            <div className="w-full sm:w-[80%] mt-6 mx-auto">
+                <h1 className="block text-3xl font-bold text-gray-700 mb-5 text-center">
+                    Purchase Credits
+                </h1>
+                <div className="flex flex-wrap justify-center gap-6">
+                    {menuItems.map((item) => {
+                        return (
+                            <div
+                                key={item.levelIcon}
+                                className="flex flex-col items-center justify-center w-full sm:w-[45%] md:w-[30%] lg:w-[22%] p-4 bg-white border border-gray-300 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 ease-in-out"
+                            >
+                                <img
+                                    src={item.levelIcon}
+                                    alt="cash level"
+                                    className="w-[60px] h-[60px] object-contain mb-4"
+                                />
+                                <p className="text-xl font-bold text-gray-700">${item.price}</p>
+                                <p className="text-sm text-gray-500">{item.balance} Coins</p>
+                                <button
+                                    onClick={() => {
+                                        setIsPaying(true);
+                                        setAmount(item.balance);
+                                        setPrice(item.price * 100);
+                                    }}
+                                    className="mt-4 bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-400 hover:to-teal-400 text-white font-medium rounded-lg py-3 px-6 transition duration-300"
+                                >
+                                    Purchase
+                                </button>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
-            {isPaying && <div className="absolute inset-0 flex justify-center items-center p-4">
-                <Elements stripe={stripePromise}>
-                    <PaymentForm value={price} setIsSuccessful={setIsSuccessful} />
-                </Elements>
-            </div>}
+
+            {isPaying && (
+                <div className="absolute inset-0 flex justify-center items-center p-4 bg-black bg-opacity-50 z-50">
+                    <div className="rounded-lg w-full max-w-lg p-6">
+                        <Elements stripe={stripePromise}>
+                            <PaymentForm value={price} setIsSuccessful={setIsSuccessful} />
+                        </Elements>
+                    </div>
+                </div>
+            )}
+
         </>
     );
 }

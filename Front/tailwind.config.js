@@ -16,9 +16,9 @@ module.exports = {
           light: "#f8c0be", // Lighter shade
           dark: "#d87774", // Darker shade
         },
-        backColor: '#6883bc',
-        NavColor: '#1e2761',
-        GoldColor:'#f3ca20',
+        backColor: '#898c8f',
+        NavColor: '#101820',
+        GoldColor: '#f3ca20',
       },
     },
   },

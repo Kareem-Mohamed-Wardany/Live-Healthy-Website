@@ -109,33 +109,52 @@ export function PurchaseVIP(props) {
     return (
         <>
             <Nav user={user} />
-            <div className='w-[70%] mt-2 sm:w-[80%]'>
-                <img src={VIP} alt="VIP" className='allign-center w-full h-[70px] sm:h-[200px] object-contain mb-1 sm:mb-4' />
-                <div className='flex flex-wrap justify-center'>
-                    <>
-                        {menuItems.map((item) => {
-                            return (
-                                <div key={item.levelIcon} className='flex flex-col items-center justify-center gap-1 sm:gap-3 w-56 h-fit p-1 sm:p-4 bg-gray-50 border border-gray-300 rounded-xl shadow-xl m-1 sm:m-4'>
-                                    <h1 className='text-lg text-NavColor font-bold'>Monthly {item.name} Plan</h1>
-                                    <img src={item.levelIcon} alt='cash level' className='w-[60px] h-[60px] sm:object-contain mb-2 sm:mb-4' />
-                                    <p className='text-xl font-bold text-gray-700'>{item.price} Coins</p>
-                                    <p className='text-2xl text-primary'>Discount <span className='text-2xl text-NavColor font-bold'>{item.discount}%</span></p>
-                                    <button
-                                        onClick={() => {
-                                            setIsSuccessful(true);
-                                            setPrice(item.price);
-                                            setName(item.name);
-                                        }}
-                                        className='mt-4 bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-400 hover:to-teal-400 text-white font-medium rounded-lg py-3 px-6 transition duration-300'
-                                    >
-                                        Purchase
-                                    </button>
-                                </div>
-                            )
-                        })}
-                    </>
+            <div className='w-w-full sm:w-[80%] mt-6 mx-auto'>
+                <img
+                    src={VIP}
+                    alt="VIP"
+                    className='w-full h-[70px] sm:h-[200px] object-contain mb-4 sm:mb-8'
+                />
+                <div className='flex flex-wrap justify-center gap-4 sm:gap-6'>
+                    {menuItems.map((item) => {
+                        return (
+                            <div
+                                key={item.levelIcon}
+                                className='flex flex-col items-center justify-center gap-2 sm:gap-4 w-full sm:w-56 h-fit p-4 bg-gray-50 border border-gray-300 rounded-xl shadow-xl m-2'
+                            >
+                                <h1 className='text-lg sm:text-xl text-NavColor font-bold'>
+                                    {item.name} Plan
+                                </h1>
+                                <img
+                                    src={item.levelIcon}
+                                    alt='cash level'
+                                    className='w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] object-contain mb-4'
+                                />
+                                <p className='text-xl sm:text-2xl font-bold text-gray-700'>
+                                    {item.price} Coins
+                                </p>
+                                <p className='text-xl sm:text-2xl text-primary'>
+                                    Discount{' '}
+                                    <span className='text-2xl sm:text-3xl text-NavColor font-bold'>
+                                        {item.discount}%
+                                    </span>
+                                </p>
+                                <button
+                                    onClick={() => {
+                                        setIsSuccessful(true);
+                                        setPrice(item.price);
+                                        setName(item.name);
+                                    }}
+                                    className='mt-4 bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-400 hover:to-teal-400 text-white font-medium rounded-lg py-3 px-6 transition duration-300'
+                                >
+                                    Purchase
+                                </button>
+                            </div>
+                        )
+                    })}
                 </div>
             </div>
+
         </>
     );
 }
