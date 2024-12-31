@@ -5,7 +5,7 @@ const ApiResponse = require('../custom-response/ApiResponse');
 
 exports.getUser = async (req, res, next) => {
     const userId = req.params.id;
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select("-password");
     if (!user)
         throw new UnauthenticatedError("Not Authorized")
     const response = new ApiResponse({
