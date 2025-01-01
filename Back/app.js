@@ -11,15 +11,25 @@ const stripe = require('stripe')(process.env.STRIPE_KEY); // Use your actual Str
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
 
+// Auth and Type Auth
+const isAuth = require("./middleware/is-auth")
+const TypeAuth = require("./middleware/type-auth")
+
+
+
 // Define Routes
 const authRoutes = require("./routes/auth");
+const adminRoutes = require("./routes/admin");
 const radioRoutes = require("./routes/radiocenter");
 const userRoutes = require("./routes/user");
+
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+// Serve static files from 'uploads' folder
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -31,6 +41,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use("/auth", authRoutes);
+app.use("/admin", isAuth, TypeAuth('admin'), adminRoutes);
 app.use("/radiology-center", radioRoutes);
 app.use("/user", userRoutes);
 

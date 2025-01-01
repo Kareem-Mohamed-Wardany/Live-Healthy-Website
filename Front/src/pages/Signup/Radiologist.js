@@ -58,7 +58,7 @@ const Radiologist = (props) => {
                     phone: props.phoneNumber,
                     dateOfBirth: new Date(props.startDate),
                     gender: props.gender,
-                    centerName: center,
+                    id: center,
                     code: code,
                 }),
             })
@@ -92,7 +92,7 @@ const Radiologist = (props) => {
                     Radiology Center
                 </option>
                 {radioCenters?.map((c) => (
-                    <option value={c.name} key={c._id.toString()}>
+                    <option value={c._id} key={c._id.toString()}>
                         {c.name}
                     </option>
                 ))}

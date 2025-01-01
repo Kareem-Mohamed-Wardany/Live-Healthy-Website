@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import Male from '../../assets/images/Male.png'
 import Female from '../../assets/images/Female.png'
+import MaleAdmin from '../../assets/images/admin_male.png'
+import FemaleAdmin from '../../assets/images/admin_female.png'
 import coin from '../../assets/images/coin.png'
 import logo from "../../assets/images/Logo.png"
 
@@ -173,10 +175,107 @@ const Nav = (props) => {
                             </ul>
                         </div>
                     </nav>
+                </>
+            }
+            {/* Admin NAV */}
+            {user.accountType === "admin" &&
+                <>
+                    <nav className="w-full bg-NavColor flex justify-between items-center p-4">
+                        {/* Logo and Title */}
+                        <div className="flex items-center">
+                            <img src={logo} alt="Live Healthy" className="w-12 h-12" />
+                        </div>
 
+                        {/* Navigation Links - Hidden on small screens, shown on larger screens */}
+                        <ul className="hidden md:flex space-x-6 text-white">
+                            <li>
+                                <a
+                                    href="/add-center"
+                                    className={`hover:text-blue-400 ${location.pathname === "/add-center" ? "text-blue-500 font-bold" : ""}`}
+                                >
+                                    Add Center
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="/centers"
+                                    className={`hover:text-blue-400 ${location.pathname === "/centers" ? "text-blue-500 font-bold" : ""}`}
+                                >
+                                    Centers
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="/doctors"
+                                    className={`hover:text-blue-400 ${location.pathname === "/doctors" ? "text-blue-500 font-bold" : ""}`}
+                                >
+                                    Doctors
+                                </a>
+                            </li>
 
+                        </ul>
+                        {/* User Profile Image and Logout Button */}
+                        <div className="flex items-center space-x-3">
+                            {
+                                user.gender === "Male" ? (
+                                    <img
+                                        className={`rounded-full w-10 h-10 object-cover`}
+                                        src={MaleAdmin}
+                                        alt="Male Avatar"
+                                    />
 
+                                ) : (
+                                    <img
+                                        className={`rounded-full w-10 h-10 object-cover`}
 
+                                        src={FemaleAdmin}
+                                        alt="Female Avatar"
+                                    />
+
+                                )
+                            }
+                            <button className="text-white px-4 py-2 bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500" onClick={logout}>
+                                Logout
+                            </button>
+                        </div>
+
+                        {/* Hamburger Menu - Visible on small screens */}
+                        <div className="md:hidden flex items-center">
+                            <button onClick={toggleMenu} className="text-white">
+                                <i className="fas fa-bars"></i> {/* Add a hamburger icon */}
+                            </button>
+                        </div>
+
+                        {/* Mobile Menu - Hidden by default, shown when toggled */}
+                        <div className={`md:hidden ${menuOpen ? 'block' : 'hidden'} absolute top-16 left-0 w-full bg-NavColor p-4`}>
+                            <ul className="space-y-4 text-white">
+                                <li>
+                                    <a
+                                        href="/add-center"
+                                        className={`hover:text-blue-400 ${location.pathname === "/add-center" ? "text-blue-500 font-bold" : ""}`}
+                                    >
+                                        Add Center
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        href="/centers"
+                                        className={`hover:text-blue-400 ${location.pathname === "/centers" ? "text-blue-500 font-bold" : ""}`}
+                                    >
+                                        Centers
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        href="/doctors"
+                                        className={`hover:text-blue-400 ${location.pathname === "/doctors" ? "text-blue-500 font-bold" : ""}`}
+                                    >
+                                        Doctors
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
                 </>
             }
         </>

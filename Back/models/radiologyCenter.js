@@ -32,7 +32,7 @@ const radioCenter = new Schema({
   },
   code: {
     type: String,
-    required: [true, 'Please provide center code'],
+    required: true,
     unique: true,
   },
   password: {

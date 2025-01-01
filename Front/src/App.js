@@ -15,6 +15,11 @@ import { Chat } from "./pages/Patient/Chat";
 import { Predict } from "./pages/Patient/Predict";
 import { Prescriptions } from "./pages/Patient/Prescriptions";
 import { PurchaseVIP } from "./pages/Patient/PurchaseVIP";
+import Admin from "./pages/Admin";
+import AddCenter from "./pages/Admin/AddCenter";
+import Centers from "./pages/Admin/Centers";
+import Doctors from "./pages/Admin/Doctors";
+
 
 const queryClient = new QueryClient();
 
@@ -87,6 +92,15 @@ function App() {
                         <Route path="/predict" element={<Predict user={user} />} />
                         <Route path="/myprescriptions" element={<Prescriptions user={user} />} />
                         <Route path="/purchasevip" element={<PurchaseVIP user={user} />} />
+                        <Route path="*" element={<Navigate to="/" />} />
+                      </>
+                    )}
+                    {user.accountType === "admin" && (
+                      <>
+                        <Route path="/" element={<Admin user={user} />} />
+                        <Route path="/add-center" element={<AddCenter user={user} />} />
+                        <Route path="/centers" element={<Centers user={user} />} />
+                        <Route path="/doctors" element={<Doctors user={user} />} />
                         <Route path="*" element={<Navigate to="/" />} />
                       </>
                     )}

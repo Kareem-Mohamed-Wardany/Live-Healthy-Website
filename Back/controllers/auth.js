@@ -10,11 +10,11 @@ exports.register = async (req, res) => {
   const { accountType } = req.body
   let user
   if (accountType === "radiologist") {
-    const centerName = req.body.centerName;
+    const centerId = req.body.id;
     const code = req.body.code;
     if (!centerName || !code)
       throw new BadRequestError("Provide Center Name or Code")
-    const center = await RadioCenter.findOne({ name: centerName });
+    const center = await RadioCenter.findById(centerId);
     if (code !== center.code)
       throw new BadRequestError("Invalid Center Code")
     user = await User.create({ ...req.body, centerID: center._id });
