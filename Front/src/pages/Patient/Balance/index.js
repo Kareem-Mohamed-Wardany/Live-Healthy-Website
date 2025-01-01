@@ -49,7 +49,7 @@ function Balance(props) {
                 setIsSuccessful(false)
                 setTimeout(() => {
                     navigate(0); // Call navigate(0) after 30 seconds
-                }, 6000);
+                }, 3000);
             }
         }
         if (isSuccessful) {

@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const RadiologyCenter = require("../models/radiologyCenter");
 const User = require("../models/user");
+const sendEmail = require('../util/mailer')
 
 const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, NotFoundError } = require('../errors');
@@ -11,133 +12,133 @@ const nodemailer = require('nodemailer');
 
 // Create the transporter for sending emails
 const transporter = nodemailer.createTransport({
-    service: 'gmail', // or your email provider
-    auth: {
-        user: process.env.EMAIL_USER, // Store your email in an environment variable
-        pass: process.env.EMAIL_PASS  // Store your email password in an environment variable
-    }
+  service: 'gmail', // or your email provider
+  auth: {
+    user: process.env.EMAIL_USER, // Store your email in an environment variable
+    pass: process.env.EMAIL_PASS  // Store your email password in an environment variable
+  }
 });
 
 exports.getAllRadiologyCenters = async (req, res, next) => {
-    const { page = 1, limit = 10 } = req.query; // Default to page 1 and 10 items per page
+  const { page = 1, limit = 10 } = req.query; // Default to page 1 and 10 items per page
 
-    // Convert page and limit to integers
-    const pageNumber = parseInt(page, 10);
-    const limitNumber = parseInt(limit, 10);
+  // Convert page and limit to integers
+  const pageNumber = parseInt(page, 10);
+  const limitNumber = parseInt(limit, 10);
 
-    // Calculate the skip value
-    const skip = (pageNumber - 1) * limitNumber;
+  // Calculate the skip value
+  const skip = (pageNumber - 1) * limitNumber;
 
-    // Fetch paginated data
-    const radiologyCenters = await RadiologyCenter.find()
-        .skip(skip)
-        .limit(limitNumber);
+  // Fetch paginated data
+  const radiologyCenters = await RadiologyCenter.find()
+    .skip(skip)
+    .limit(limitNumber);
 
-    // Count total documents for pagination meta-data
-    const totalCount = await RadiologyCenter.countDocuments();
+  // Count total documents for pagination meta-data
+  const totalCount = await RadiologyCenter.countDocuments();
 
-    if (!radiologyCenters.length) {
-        throw new NotFoundError("No radiology centers found");
-    }
+  if (!radiologyCenters.length) {
+    throw new NotFoundError("No radiology centers found");
+  }
 
-    // Prepare response
-    const response = new ApiResponse({
-        msg: "Radiology centers retrieved successfully",
-        data: {
-            centers: radiologyCenters,
-            metaData: {
-                totalItems: totalCount,
-                totalPages: Math.ceil(totalCount / limitNumber),
-                currentPage: pageNumber,
-                itemsPerPage: limitNumber,
-            },
-        },
-        statusCode: StatusCodes.OK
-    });
+  // Prepare response
+  const response = new ApiResponse({
+    msg: "Radiology centers retrieved successfully",
+    data: {
+      centers: radiologyCenters,
+      metaData: {
+        totalItems: totalCount,
+        totalPages: Math.ceil(totalCount / limitNumber),
+        currentPage: pageNumber,
+        itemsPerPage: limitNumber,
+      },
+    },
+    statusCode: StatusCodes.OK
+  });
 
-    res.status(response.statusCode).json(response);
+  res.status(response.statusCode).json(response);
 };
 
 const generateCode = () => {
-    const characters =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let result = "";
-    let length = 16;
-    for (let i = 0; i < length; i++) {
-        const randomIndex = Math.floor(Math.random() * characters.length);
-        result += characters[randomIndex];
-    }
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  let length = 16;
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters[randomIndex];
+  }
 
-    return result;
+  return result;
 };
 
 exports.addRadiologyCenter = async (req, res, next) => {
-    const code = generateCode();
-    req.body.code = code;
-    const radiologyCenter = await RadiologyCenter.create(req.body);
-    const response = new ApiResponse({
-        msg: "Radiology center created successfully",
-        data: radiologyCenter,
-        statusCode: StatusCodes.CREATED,
-    });
-    res.status(response.statusCode).json(response);
+  const code = generateCode();
+  req.body.code = code;
+  const radiologyCenter = await RadiologyCenter.create(req.body);
+  const response = new ApiResponse({
+    msg: "Radiology center created successfully",
+    data: radiologyCenter,
+    statusCode: StatusCodes.CREATED,
+  });
+  res.status(response.statusCode).json(response);
 };
 
 exports.deleteCenter = async (req, res, next) => {
-    const id = req.params.id;
-    const center = await RadiologyCenter.findByIdAndDelete(id);
-    if (!center) {
-        throw new NotFoundError("Radiology center not found");
-    }
-    const response = new ApiResponse({
-        msg: "Radiology center deleted successfully",
-        statusCode: StatusCodes.OK,
-    });
-    res.status(response.statusCode).json(response);
+  const id = req.params.id;
+  const center = await RadiologyCenter.findByIdAndDelete(id);
+  if (!center) {
+    throw new NotFoundError("Radiology center not found");
+  }
+  const response = new ApiResponse({
+    msg: "Radiology center deleted successfully",
+    statusCode: StatusCodes.OK,
+  });
+  res.status(response.statusCode).json(response);
 };
 
 
 exports.getAllDoctors = async (req, res, next) => {
-    const { page = 1, limit = 10 } = req.query; // Default to page 1 and 10 items per page
+  const { page = 1, limit = 10 } = req.query; // Default to page 1 and 10 items per page
 
-    // Convert page and limit to integers
-    const pageNumber = parseInt(page, 10);
-    const limitNumber = parseInt(limit, 10);
+  // Convert page and limit to integers
+  const pageNumber = parseInt(page, 10);
+  const limitNumber = parseInt(limit, 10);
 
-    // Calculate the skip value
-    const skip = (pageNumber - 1) * limitNumber;
+  // Calculate the skip value
+  const skip = (pageNumber - 1) * limitNumber;
 
-    const doctors = await User.find({ accountType: { $in: ["specialist", "consultant"] } }).select("-password").skip(skip).limit(limitNumber);
-    const totalCount = await User.countDocuments({ accountType: { $in: ["specialist", "consultant"] } });
-    if (!doctors.length) {
-        throw new NotFoundError("No doctors found");
-    }
-    const response = new ApiResponse({
-        msg: "Doctors retrieved successfully",
-        data: {
-            doctors: doctors,
-            metaData: {
-                totalItems: totalCount,
-                totalPages: Math.ceil(totalCount / limitNumber),
-                currentPage: pageNumber,
-                itemsPerPage: limitNumber,
-            },
-        },
-        statusCode: StatusCodes.OK,
-    });
-    res.status(response.statusCode).json(response);
+  const doctors = await User.find({ accountType: { $in: ["specialist", "consultant"] } }).select("-password").skip(skip).limit(limitNumber);
+  const totalCount = await User.countDocuments({ accountType: { $in: ["specialist", "consultant"] } });
+  if (!doctors.length) {
+    throw new NotFoundError("No doctors found");
+  }
+  const response = new ApiResponse({
+    msg: "Doctors retrieved successfully",
+    data: {
+      doctors: doctors,
+      metaData: {
+        totalItems: totalCount,
+        totalPages: Math.ceil(totalCount / limitNumber),
+        currentPage: pageNumber,
+        itemsPerPage: limitNumber,
+      },
+    },
+    statusCode: StatusCodes.OK,
+  });
+  res.status(response.statusCode).json(response);
 }
 
 
 exports.deleteDoctor = async (req, res) => {
-    const doctorId = req.params.id;
-    // Get the doctor's data from the database to access file paths
-    const doctor = await User.findById(doctorId);
+  const doctorId = req.params.id;
+  // Get the doctor's data from the database to access file paths
+  const doctor = await User.findById(doctorId);
 
-    if (!doctor) {
-        throw new NotFoundError("No Doctor found");
-    }
-    const emailContent = `
+  if (!doctor) {
+    throw new NotFoundError("No Doctor found");
+  }
+  const emailContent = `
     <!DOCTYPE html>
     <html>
       <head>
@@ -226,60 +227,43 @@ exports.deleteDoctor = async (req, res) => {
     </html>
     `;
 
+  sendEmail(doctor.mail, 'Your Doctor Profile Verification Failed', emailContent)
 
-    const mailOptions = {
-        from: process.env.EMAIL_USER, // Sender's email
-        to: doctor.mail, // Doctor's email from the database
-        subject: 'Your Doctor Profile Verification Failed', // Subject of the email
-        html: emailContent
-    };
-
-    // Send the email
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.log("Error sending email:", error);
-            return next(new Error("Failed to send verification email"));
-        } else {
-            console.log("Email sent: " + info.response);
-        }
+  // File paths to be removed (replace with your specific file fields)
+  const rootDir = process.cwd();
+  const filePaths = [
+    path.join(rootDir, `${doctor.docData.IDFront}`),
+    path.join(rootDir, `${doctor.docData.IDBack}`),
+    path.join(rootDir, `${doctor.docData.ProfFront}`),
+    path.join(rootDir, `${doctor.docData.ProfBack}`)
+  ];
+  filePaths.forEach((filePath) => {
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        console.error(`Error deleting file ${filePath}:`, err);
+      }
     });
-
-
-    // File paths to be removed (replace with your specific file fields)
-    const rootDir = process.cwd();
-    const filePaths = [
-        path.join(rootDir, `${doctor.docData.IDFront}`),
-        path.join(rootDir, `${doctor.docData.IDBack}`),
-        path.join(rootDir, `${doctor.docData.ProfFront}`),
-        path.join(rootDir, `${doctor.docData.ProfBack}`)
-    ];
-    filePaths.forEach((filePath) => {
-        fs.unlink(filePath, (err) => {
-            if (err) {
-                console.error(`Error deleting file ${filePath}:`, err);
-            }
-        });
-    });
-    // Proceed to delete the doctor record
-    const deletedUser = await User.findByIdAndDelete(doctorId);
-    if (!deletedUser) {
-        throw new NotFoundError("No Doctor found");
-    }
-    const response = new ApiResponse({
-        msg: "Doctor deleted successfully",
-        statusCode: StatusCodes.OK,
-    });
-    res.status(response.statusCode).json(response);
+  });
+  // Proceed to delete the doctor record
+  const deletedUser = await User.findByIdAndDelete(doctorId);
+  if (!deletedUser) {
+    throw new NotFoundError("No Doctor found");
+  }
+  const response = new ApiResponse({
+    msg: "Doctor deleted successfully",
+    statusCode: StatusCodes.OK,
+  });
+  res.status(response.statusCode).json(response);
 };
 
 exports.verifyDoctor = async (req, res, next) => {
-    const id = req.params.id;
-    const doctor = await User.findByIdAndUpdate(id, { $set: { "docData.verified": true } })  // Set only the "verified" field to true
-    // const doctor = await User.findById(id);
-    if (!doctor) {
-        throw new NotFoundError("Doctor not found");
-    }
-    const emailContent = `
+  const id = req.params.id;
+  const doctor = await User.findByIdAndUpdate(id, { $set: { "docData.verified": true } })  // Set only the "verified" field to true
+  // const doctor = await User.findById(id);
+  if (!doctor) {
+    throw new NotFoundError("Doctor not found");
+  }
+  const emailContent = `
     <!DOCTYPE html>
     <html>
       <head>
@@ -343,27 +327,13 @@ exports.verifyDoctor = async (req, res, next) => {
     </html>
     `;
 
-    // To Do
-    const mailOptions = {
-        from: process.env.EMAIL_USER, // Sender's email
-        to: doctor.mail, // Doctor's email from the database
-        subject: 'Your Doctor Profile is Now Verified', // Subject of the email
-        html: emailContent
-    };
+  // To Do
+  // Send the email
+  sendEmail(doctor.mail, 'Your Doctor Profile is Now Verified', emailContent)
 
-    // Send the email
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.log("Error sending email:", error);
-            return next(new Error("Failed to send verification email"));
-        } else {
-            console.log("Email sent: " + info.response);
-        }
-    });
-    // Send Email to help saying that he got verified
-    const response = new ApiResponse({
-        msg: "Doctor verified successfully",
-        statusCode: StatusCodes.OK,
-    });
-    res.status(response.statusCode).json(response);
+  const response = new ApiResponse({
+    msg: "Doctor verified successfully",
+    statusCode: StatusCodes.OK,
+  });
+  res.status(response.statusCode).json(response);
 };

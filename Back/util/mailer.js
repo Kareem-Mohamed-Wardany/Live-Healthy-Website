@@ -11,19 +11,29 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// Email options (who you're sending it to, subject, body, etc.)
-const mailOptions = {
-    from: process.env.EMAIL_USER,  // Your email address (sender)
-    to: 'recipient-email@example.com',  // Recipient's email address
-    subject: 'Test Email from Nodemailer',  // Subject line
-    text: 'Hello, this is a test email sent using Nodemailer in Node.js.'  // Email body
+/**
+ * Sends an email using Nodemailer.
+ * @param {string} to - The recipient's email address.
+ * @param {string} subject - The subject of the email.
+ * @param {string} htmlContent - The HTML content of the email body.
+ * @returns {Promise<void>} - A promise that resolves when the email is sent.
+ */
+const sendEmail = async (sentMail, msg, htmlContent) => {
+    const mailOptions = {
+        from: process.env.EMAIL_USER, // Sender's email
+        to: sentMail, // Doctor's email from the database
+        subject: msg, // Subject of the email
+        html: htmlContent
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.log("Error sending email:", error);
+            return next(new Error("Failed to send email"));
+        } else {
+            console.log("Email sent: " + info.response);
+        }
+    });
 };
 
-// Send the email
-transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-        console.log('Error occurred:', error);
-    } else {
-        console.log('Email sent:', info.response);
-    }
-});
+module.exports = sendEmail;

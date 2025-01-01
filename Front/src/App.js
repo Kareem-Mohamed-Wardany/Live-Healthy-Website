@@ -19,6 +19,8 @@ import Admin from "./pages/Admin";
 import AddCenter from "./pages/Admin/AddCenter";
 import Centers from "./pages/Admin/Centers";
 import Doctors from "./pages/Admin/Doctors";
+import ForgetPassword from "./pages/ForgetPassword";
+import ResetPassword from "./pages/ForgetPassword/RestPassword";
 
 
 const queryClient = new QueryClient();
@@ -114,7 +116,9 @@ function App() {
               <>
                 <Route path="/" element={<Login />} />
                 <Route path="/signup" element={<SignUp />} />
-                <Route path="*" element={<Navigate to="/" />} />
+                <Route path="/forget-password" element={<ForgetPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                {/* <Route path="*" element={<Navigate to="/" />} /> */}
               </>
             )}
           </Routes>
