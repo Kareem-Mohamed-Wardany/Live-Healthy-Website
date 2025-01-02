@@ -30,28 +30,31 @@ const Login = () => {
       createNotification("Please Enter valid mail and Password", "warning");
       return;
     }
-    try {
 
-      const res = await axios.post("http://localhost:8080/auth/login", data);
-      if (res.status === 200 || res.statusCode === 200) {
-        console.log(res);
-        localStorage.setItem("token", res.data.data.token);
-        localStorage.setItem("userId", res.data.data.user.userId);
-        const remainingMilliseconds = 60 * 60 * 1000;
-        const expiryDate = new Date(
-          new Date().getTime() + remainingMilliseconds
-        );
-        localStorage.setItem("expiryDate", expiryDate.toISOString());
-        console.log("Navigating to /");
-        navigate(0);
-      } if (res.status === 401 || res.statusCode === 401) {
-        createNotification("Wrong mail or Password", "error");
-        return;
-      }
+    let res = await fetch("http://localhost:8080/auth/login", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+    res = await res.json();
+    if (res.statusCode === 200) {
+      console.log(res);
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("userId", res.data.user.userId);
+      const remainingMilliseconds = 60 * 60 * 1000;
+      const expiryDate = new Date(
+        new Date().getTime() + remainingMilliseconds
+      );
+      localStorage.setItem("expiryDate", expiryDate.toISOString());
+      console.log("Navigating to /");
+      navigate(0);
+    } else {
+      createNotification(res.msg, "error");
+      return;
     }
-    catch (error) {
-      createNotification(error.response.data.msg, "error");
-    }
+
 
 
   };

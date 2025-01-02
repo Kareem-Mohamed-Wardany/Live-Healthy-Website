@@ -22,6 +22,7 @@ const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin");
 const radioRoutes = require("./routes/radiocenter");
 const userRoutes = require("./routes/user");
+const appointmentRoutes = require("./routes/appointment");
 
 
 const app = express();
@@ -42,6 +43,7 @@ app.use((req, res, next) => {
 });
 app.use("/auth", authRoutes);
 app.use("/admin", isAuth, TypeAuth('admin'), adminRoutes);
+app.use("/appointment", isAuth, appointmentRoutes);
 app.use("/radiology-center", radioRoutes);
 app.use("/user", userRoutes);
 

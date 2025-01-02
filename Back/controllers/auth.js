@@ -70,6 +70,12 @@ exports.login = async (req, res) => {
     throw new UnauthenticatedError('Invalid Credentials');
   }
 
+  if (user.accountType === 'specialist' || user.accountType === 'consultant') {
+    if (!user.docData.verified) {
+      throw new UnauthenticatedError("Please be patient We are checking your documents!");
+    }
+  }
+
   const token = user.createJWT();
   const response = new ApiResponse({
     msg: 'User logged in successfully',

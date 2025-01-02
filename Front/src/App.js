@@ -12,7 +12,7 @@ import "react-notifications/lib/notifications.css";
 import Patient from "./pages/Patient";
 import Balance from "./pages/Patient/Balance";
 import { Chat } from "./pages/Patient/Chat";
-import { Predict } from "./pages/Patient/Predict";
+import { Appointment } from "./pages/Patient/Appointment";
 import { Prescriptions } from "./pages/Patient/Prescriptions";
 import { PurchaseVIP } from "./pages/Patient/PurchaseVIP";
 import Admin from "./pages/Admin";
@@ -21,6 +21,9 @@ import Centers from "./pages/Admin/Centers";
 import Doctors from "./pages/Admin/Doctors";
 import ForgetPassword from "./pages/ForgetPassword";
 import ResetPassword from "./pages/ForgetPassword/RestPassword";
+import Doctor from "./pages/Doctor";
+import AssignAppointment from "./pages/Doctor/AssignAppointment";
+import MyAppointments from "./pages/Doctor/MyAppointments";
 
 
 const queryClient = new QueryClient();
@@ -91,7 +94,7 @@ function App() {
                         <Route path="/" element={<Patient user={user} />} />
                         <Route path="/mycoins" element={<Balance user={user} />} />
                         <Route path="/chat" element={<Chat user={user} />} />
-                        <Route path="/predict" element={<Predict user={user} />} />
+                        <Route path="/appointment" element={<Appointment user={user} />} />
                         <Route path="/myprescriptions" element={<Prescriptions user={user} />} />
                         <Route path="/purchasevip" element={<PurchaseVIP user={user} />} />
                         <Route path="*" element={<Navigate to="/" />} />
@@ -106,6 +109,17 @@ function App() {
                         <Route path="*" element={<Navigate to="/" />} />
                       </>
                     )}
+                    {user.accountType === 'specialist' || user.accountType === 'consultant' ?
+                      <>
+                        <Route path="/" element={<Doctor user={user} />} />
+                        <Route path="/appointments" element={<AssignAppointment user={user} />} />
+                        <Route path="/myappointments" element={<MyAppointments user={user} />} />
+                        {/*<Route path="/centers" element={<Centers user={user} />} />
+                        <Route path="/doctors" element={<Doctors user={user} />} /> */}
+                        <Route path="*" element={<Navigate to="/" />} />
+                      </>
+                      : null
+                    }
                   </>
                 )}
               </>
@@ -118,7 +132,7 @@ function App() {
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/forget-password" element={<ForgetPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
-                {/* <Route path="*" element={<Navigate to="/" />} /> */}
+                <Route path="*" element={<Navigate to="/" />} />
               </>
             )}
           </Routes>

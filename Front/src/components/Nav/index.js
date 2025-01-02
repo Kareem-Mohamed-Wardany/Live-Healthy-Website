@@ -40,10 +40,10 @@ const Nav = (props) => {
                         <ul className="hidden md:flex space-x-6 text-white">
                             <li>
                                 <a
-                                    href="/predict"
-                                    className={`hover:text-blue-400 ${location.pathname === "/predict" ? "text-blue-500 font-bold" : ""}`}
+                                    href="/appointment"
+                                    className={`hover:text-blue-400 ${location.pathname === "/appointment" ? "text-blue-500 font-bold" : ""}`}
                                 >
-                                    Predict
+                                    Appointment
                                 </a>
                             </li>
                             <li>
@@ -134,10 +134,10 @@ const Nav = (props) => {
                             <ul className="space-y-4 text-white">
                                 <li>
                                     <a
-                                        href="/predict"
-                                        className={`hover:text-blue-400 ${location.pathname === "/predict" ? "text-blue-500 font-bold" : ""}`}
+                                        href="/appointment"
+                                        className={`hover:text-blue-400 ${location.pathname === "/appointment" ? "text-blue-500 font-bold" : ""}`}
                                     >
-                                        Predict
+                                        Appointment
                                     </a>
                                 </li>
                                 <li>
@@ -277,6 +277,122 @@ const Nav = (props) => {
                         </div>
                     </nav>
                 </>
+            }
+            {/* Doctor NAV */}
+            {user.accountType === 'specialist' || user.accountType === 'consultant' ? <>
+                <nav className="w-full bg-NavColor flex justify-between items-center p-4">
+                    {/* Logo and Title */}
+                    <div className="flex items-center">
+                        <img src={logo} alt="Live Healthy" className="w-12 h-12" />
+                    </div>
+
+                    {/* Navigation Links - Hidden on small screens, shown on larger screens */}
+                    <ul className="hidden md:flex space-x-6 text-white">
+                        <li>
+                            <a
+                                href="/patients"
+                                className={`hover:text-blue-400 ${location.pathname === "/patients" ? "text-blue-500 font-bold" : ""}`}
+                            >
+                                Patients
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="/chats"
+                                className={`hover:text-blue-400 ${location.pathname === "/chats" ? "text-blue-500 font-bold" : ""}`}
+                            >
+                                Chats
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="/appointments"
+                                className={`hover:text-blue-400 ${location.pathname === "/appointments" ? "text-blue-500 font-bold" : ""}`}
+                            >
+                                Appointments
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="/myappointments"
+                                className={`hover:text-blue-400 ${location.pathname === "/myappointments" ? "text-blue-500 font-bold" : ""}`}
+                            >
+                                My Appointments
+                            </a>
+                        </li>
+
+                    </ul>
+                    {/* User Profile Image and Logout Button */}
+                    <div className="flex items-center space-x-3">
+                        {
+                            user.gender === "Male" ? (
+                                <img
+                                    className={`rounded-full w-10 h-10 object-cover`}
+                                    src={Male}
+                                    alt="Male Avatar"
+                                />
+
+                            ) : (
+                                <img
+                                    className={`rounded-full w-10 h-10 object-cover`}
+
+                                    src={Female}
+                                    alt="Female Avatar"
+                                />
+
+                            )
+                        }
+                        <button className="text-white px-4 py-2 bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500" onClick={logout}>
+                            Logout
+                        </button>
+                    </div>
+
+                    {/* Hamburger Menu - Visible on small screens */}
+                    <div className="md:hidden flex items-center">
+                        <button onClick={toggleMenu} className="text-white">
+                            <i className="fas fa-bars"></i> {/* Add a hamburger icon */}
+                        </button>
+                    </div>
+
+                    {/* Mobile Menu - Hidden by default, shown when toggled */}
+                    <div className={`md:hidden ${menuOpen ? 'block' : 'hidden'} absolute top-16 left-0 w-full bg-NavColor p-4`}>
+                        <ul className="space-y-4 text-white">
+                            <li>
+                                <a
+                                    href="/patients"
+                                    className={`hover:text-blue-400 ${location.pathname === "/patients" ? "text-blue-500 font-bold" : ""}`}
+                                >
+                                    Patients
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="/chats"
+                                    className={`hover:text-blue-400 ${location.pathname === "/chats" ? "text-blue-500 font-bold" : ""}`}
+                                >
+                                    Chats
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="/appointments"
+                                    className={`hover:text-blue-400 ${location.pathname === "/appointments" ? "text-blue-500 font-bold" : ""}`}
+                                >
+                                    Appointments
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="/myappointments"
+                                    className={`hover:text-blue-400 ${location.pathname === "/myappointments" ? "text-blue-500 font-bold" : ""}`}
+                                >
+                                    My Appointments
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </> : (null)
             }
         </>
 
