@@ -24,6 +24,9 @@ import ResetPassword from "./pages/ForgetPassword/RestPassword";
 import Doctor from "./pages/Doctor";
 import AssignAppointment from "./pages/Doctor/AssignAppointment";
 import MyAppointments from "./pages/Doctor/MyAppointments";
+import DChat from "./pages/Doctor/chat";
+import AssignChat from "./pages/Doctor/patients";
+import AllChats from "./pages/Doctor/AllChats";
 
 
 const queryClient = new QueryClient();
@@ -113,6 +116,9 @@ function App() {
                         <Route path="/" element={<Doctor user={user} />} />
                         <Route path="/appointments" element={<AssignAppointment user={user} />} />
                         <Route path="/myappointments" element={<MyAppointments user={user} />} />
+                        <Route path="/chats" element={<AllChats user={user} />} />
+                        <Route path="/:id" element={<DChat user={user} />} />
+                        <Route path="/patients" element={<AssignChat user={user} />} />
                         {/*<Route path="/centers" element={<Centers user={user} />} />
                         <Route path="/doctors" element={<Doctors user={user} />} /> */}
                         <Route path="*" element={<Navigate to="/" />} />

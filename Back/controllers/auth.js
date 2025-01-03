@@ -88,7 +88,6 @@ exports.login = async (req, res) => {
 
 exports.forgetPassword = async (req, res, next) => {
   const mail = req.body.email;
-  console.log(mail)
   const user = await User.findOne({ mail });
   if (!user)
     throw new UnauthenticatedError("Email does not exists, Create a new User!");

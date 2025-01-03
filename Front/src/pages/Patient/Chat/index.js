@@ -1,17 +1,143 @@
-import React from 'react'
-import Nav from '../../../components/Nav'
+import React, { useState, useEffect } from 'react';
+import Nav from '../../../components/Nav';
 import { useAppContext } from '../../../provider';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import io from 'socket.io-client';
+import ChatComponent from '../../../components/Chat';
+import PatientChatReq from '../../../components/PatientChatReq';
 
-export const Chat = (props) => {
-    const user = props.user
+const socket = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:8080');
+
+export const Chat = ({ user }) => {
+    const location = useLocation().pathname;
+    const userId = user._id;
     const navigate = useNavigate();
     const { createNotification } = useAppContext();
+
+    const [loading, setLoading] = useState(true);
+    const [found, setFound] = useState(false);
+    const [chat, setChat] = useState({ participants: [], messages: [] });
+    const [mychatData, setMyChatData] = useState({});
+    const [message, setMessage] = useState('');
+
+    useEffect(() => {
+        const fetchChatData = async () => {
+            try {
+                const res = await axios.get(`http://localhost:8080/chat/mychat`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
+                if (res.data.statusCode === 200) {
+                    setMyChatData(res.data.data);
+                    setFound(true);
+                }
+            } catch (error) {
+                console.error('Failed to fetch chat data:', error);
+                createNotification('Failed to load chat data', 'error');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchChatData();
+    }, [createNotification]);
+
+    useEffect(() => {
+        if (!found || location !== '/chat' || mychatData.status !== 'active') return;
+
+        const doctorId = mychatData.doctorId._id;
+
+        // Notify server of user online status
+        socket.emit('user-online', userId);
+        const cid = mychatData._id
+
+        // Fetch chat history
+        socket.emit('get-chat-history', { cid });
+
+        const handleChatHistory = (chatData) => {
+            setChat(chatData);
+        };
+
+        const handleReceiveMessage = (newMessage) => {
+            setChat((prevChat) => ({
+                ...prevChat,
+                messages: [...prevChat.messages, newMessage],
+            }));
+        };
+
+        // Register socket event listeners
+        socket.on('chat-history', handleChatHistory);
+        socket.on('receive-message', handleReceiveMessage);
+
+        return () => {
+            // Clean up event listeners
+            socket.off('chat-history', handleChatHistory);
+            socket.off('receive-message', handleReceiveMessage);
+        };
+    }, [found, location, mychatData, userId]);
+
+    const handleSendMessage = () => {
+        if (message.trim() === '') return;
+
+        const doctorId = mychatData.doctorId._id;
+
+        // Emit the message to the server
+        socket.emit('send-message', {
+            id: mychatData._id,
+            sender: userId,
+            receiver: doctorId,
+            message,
+        });
+
+        // Optimistically update the chat UI
+        setChat((prevChat) => ({
+            ...prevChat,
+            messages: [
+                ...prevChat.messages,
+                { sender: userId, message, timestamp: new Date().toISOString() },
+            ],
+        }));
+
+        setMessage(''); // Clear the input field
+    };
+
+    if (loading) {
+        return (
+            <p className="text-center text-xl font-semibold text-gray-600 animate-pulse">
+                Loading...
+            </p>
+        );
+    }
+
     return (
         <>
             <Nav user={user} />
-            <div>index</div>
+            {!found ? (
+                <PatientChatReq
+                    found={found}
+                    setFound={setFound}
+                    message={mychatData.reason || 'No reason provided'}
+                />
+            ) : (
+                <>
+                    {mychatData.status === 'pending' && (
+                        <PatientChatReq found={found} setFound={setFound} />
+                    )}
+                    {mychatData.status === 'active' && (
+                        <ChatComponent
+                            userId={userId}
+                            contactId={mychatData.doctorId}
+                            chat={chat}
+                            handleSendMessage={handleSendMessage}
+                            message={message}
+                            setMessage={setMessage}
+                            name={mychatData.doctorId?.name || 'Unknown'}
+                        />
+                    )}
+                </>
+            )}
         </>
-    )
-}
+    );
+};

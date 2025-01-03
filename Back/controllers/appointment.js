@@ -7,31 +7,31 @@ const { BadRequestError, NotFoundError } = require('../errors');
 const ApiResponse = require('../custom-response/ApiResponse');
 
 function convertTo12HourFormat(time) {
-    let [hours, minutes] = time.split(":");
-    hours = parseInt(hours, 10);
-    const period = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12 || 12; // Convert 0 to 12 (midnight) and 13-23 to 1-11 PM
-    return `${hours}:${minutes} ${period}`;
+  let [hours, minutes] = time.split(":");
+  hours = parseInt(hours, 10);
+  const period = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12; // Convert 0 to 12 (midnight) and 13-23 to 1-11 PM
+  return `${hours}:${minutes} ${period}`;
 }
 
 
 
 
 exports.createAppointment = async (req, res) => {
-    const userId = req.user.userId
-    req.body.patientId = userId
-    const patient = await User.findById(userId)
-    if (patient.balance < 250)
-        throw new BadRequestError("Insufficient balance to create appointment")
-    patient.balance -= 250
-    await patient.save()
+  const userId = req.user.userId
+  req.body.patientId = userId
+  const patient = await User.findById(userId)
+  if (patient.balance < 250)
+    throw new BadRequestError("Insufficient balance to create appointment")
+  patient.balance -= 250
+  await patient.save()
 
-    const appointment = await Appointment.create({ ...req.body })
-    if (!appointment) {
-        throw new BadRequestError("Failed to create appointment")
-    }
+  const appointment = await Appointment.create({ ...req.body })
+  if (!appointment) {
+    throw new BadRequestError("Failed to create appointment")
+  }
 
-    const emailContent = `
+  const emailContent = `
   <!DOCTYPE html>
   <html>
     <head>
@@ -119,74 +119,74 @@ exports.createAppointment = async (req, res) => {
   </html>
 `;
 
-    await sendEmail(patient.mail, "Appointment Created", emailContent)
+  await sendEmail(patient.mail, "Appointment Created", emailContent)
 
-    const response = new ApiResponse({
-        msg: "Appointment created successfully, 250 coins withdrawed",
-        data: appointment,
-        statusCode: StatusCodes.CREATED,
-    });
-    res.status(response.statusCode).json(response);
+  const response = new ApiResponse({
+    msg: "Appointment created successfully, 250 coins withdrawed",
+    data: appointment,
+    statusCode: StatusCodes.CREATED,
+  });
+  res.status(response.statusCode).json(response);
 }
 
 exports.getMyAppointment = async (req, res) => {
-    const userId = req.user.userId
-    const appointments = await Appointment.findOne({ patientId: userId, status: { $ne: 'finished' } }).populate("doctorId", "name mail phone address")
-    if (!appointments) {
-        throw new NotFoundError("No appointments found for this user")
-    }
-    const response = new ApiResponse({
-        msg: "Appointments retrieved successfully",
-        data: appointments,
-        statusCode: StatusCodes.OK,
-    });
-    res.status(response.statusCode).json(response);
+  const userId = req.user.userId
+  const appointments = await Appointment.findOne({ patientId: userId, status: { $ne: 'finished' } }).populate("doctorId", "name mail phone address")
+  if (!appointments) {
+    throw new NotFoundError("No appointments found for this user")
+  }
+  const response = new ApiResponse({
+    msg: "Appointments retrieved successfully",
+    data: appointments,
+    statusCode: StatusCodes.OK,
+  });
+  res.status(response.statusCode).json(response);
 }
 
 exports.getPendingAppointments = async (req, res) => {
-    const { page = 1, limit = 10 } = req.query; // Default to page 1 and 10 items per page
+  const { page = 1, limit = 10 } = req.query; // Default to page 1 and 10 items per page
 
-    // Convert page and limit to integers
-    const pageNumber = parseInt(page, 10);
-    const limitNumber = parseInt(limit, 10);
+  // Convert page and limit to integers
+  const pageNumber = parseInt(page, 10);
+  const limitNumber = parseInt(limit, 10);
 
-    // Calculate the skip value
-    const skip = (pageNumber - 1) * limitNumber;
+  // Calculate the skip value
+  const skip = (pageNumber - 1) * limitNumber;
 
-    const appointments = await Appointment.find({ status: 'pending' }).populate("patientId", "name gender dateOfBirth phone mail address healthStatus").skip(skip).limit(limitNumber);
+  const appointments = await Appointment.find({ status: 'pending' }).populate("patientId", "name gender dateOfBirth phone mail address healthStatus").skip(skip).limit(limitNumber);
 
-    if (!appointments) {
-        throw new NotFoundError("No pending appointments found for this doctor")
-    }
+  if (!appointments) {
+    throw new NotFoundError("No pending appointments found")
+  }
 
-    const totalCount = await Appointment.countDocuments({ status: 'pending' });
+  const totalCount = await Appointment.countDocuments({ status: 'pending' });
 
-    const response = new ApiResponse({
-        msg: "Pending appointments retrieved successfully",
-        data: {
-            appointments: appointments,
-            metaData: {
-                totalItems: totalCount,
-                totalPages: Math.ceil(totalCount / limitNumber),
-                currentPage: pageNumber,
-                itemsPerPage: limitNumber,
-            },
-        },
-        statusCode: StatusCodes.OK,
-    });
-    res.status(response.statusCode).json(response);
+  const response = new ApiResponse({
+    msg: "Pending appointments retrieved successfully",
+    data: {
+      appointments: appointments,
+      metaData: {
+        totalItems: totalCount,
+        totalPages: Math.ceil(totalCount / limitNumber),
+        currentPage: pageNumber,
+        itemsPerPage: limitNumber,
+      },
+    },
+    statusCode: StatusCodes.OK,
+  });
+  res.status(response.statusCode).json(response);
 }
 
 exports.appointmentAccept = async (req, res) => {
-    const appointmentId = req.params.id
-    const docId = req.user.userId
-    const appointment = await Appointment.findByIdAndUpdate(appointmentId, { status: 'accepted', doctorId: docId }, { new: true })
-    if (!appointment) {
-        throw new NotFoundError("Appointment not found")
-    }
-    const patient = await User.findById(appointment.patientId)
-    const doc = await User.findById(docId)
-    const emailContent = `
+  const appointmentId = req.params.id
+  const docId = req.user.userId
+  const appointment = await Appointment.findByIdAndUpdate(appointmentId, { status: 'accepted', doctorId: docId }, { new: true })
+  if (!appointment) {
+    throw new NotFoundError("Appointment not found")
+  }
+  const patient = await User.findById(appointment.patientId)
+  const doc = await User.findById(docId)
+  const emailContent = `
   <!DOCTYPE html>
   <html>
     <head>
@@ -272,25 +272,25 @@ exports.appointmentAccept = async (req, res) => {
   </html>
 `;
 
-    await sendEmail(patient.mail, "Appointment Accepted", emailContent)
-    const response = new ApiResponse({
-        msg: "Appointment accepted successfully",
-        data: null,
-        statusCode: StatusCodes.OK,
-    });
-    res.status(response.statusCode).json(response);
+  await sendEmail(patient.mail, "Appointment Accepted", emailContent)
+  const response = new ApiResponse({
+    msg: "Appointment accepted successfully",
+    data: null,
+    statusCode: StatusCodes.OK,
+  });
+  res.status(response.statusCode).json(response);
 }
 
 exports.appointmentCancel = async (req, res) => {
-    const appointmentId = req.params.id
-    const docId = req.user.userId
-    const appointment = await Appointment.findByIdAndUpdate(appointmentId, { status: 'pending', doctorId: null }, { new: true })
-    if (!appointment) {
-        throw new NotFoundError("Appointment not found")
-    }
-    const patient = await User.findById(appointment.patientId)
-    const doc = await User.findById(docId)
-    const emailContent = `
+  const appointmentId = req.params.id
+  const docId = req.user.userId
+  const appointment = await Appointment.findByIdAndUpdate(appointmentId, { status: 'pending', doctorId: null }, { new: true })
+  if (!appointment) {
+    throw new NotFoundError("Appointment not found")
+  }
+  const patient = await User.findById(appointment.patientId)
+  const doc = await User.findById(docId)
+  const emailContent = `
   <!DOCTYPE html>
   <html>
     <head>
@@ -375,44 +375,44 @@ exports.appointmentCancel = async (req, res) => {
     </body>
   </html>
 `;
-    await sendEmail(patient.mail, "Appointment Cancelled", emailContent)
-    const response = new ApiResponse({
-        msg: "Appointment cancelled successfully",
-        data: null,
-        statusCode: StatusCodes.OK,
-    });
-    res.status(response.statusCode).json(response);
+  await sendEmail(patient.mail, "Appointment Cancelled", emailContent)
+  const response = new ApiResponse({
+    msg: "Appointment cancelled successfully",
+    data: null,
+    statusCode: StatusCodes.OK,
+  });
+  res.status(response.statusCode).json(response);
 }
 
 exports.appointmentFinish = async (req, res) => {
-    const appointmentId = req.params.id
-    const docId = req.user.userId
-    const appointment = await Appointment.findById(appointmentId)
-    if (!appointment) {
-        throw new NotFoundError("Appointment not found")
-    }
-    const appDate = new Date(appointment.appointmentDate).toISOString()
-    const appointmentTime = appointment.appointmentTime
-    const appointmentDateTime = new Date(`${appDate.split('T')[0]}T${appointmentTime}:00`);
-    const appDate2 = new Date(appointment.appointmentDate).toISOString().split('T')[0]
+  const appointmentId = req.params.id
+  const docId = req.user.userId
+  const appointment = await Appointment.findById(appointmentId)
+  if (!appointment) {
+    throw new NotFoundError("Appointment not found")
+  }
+  const appDate = new Date(appointment.appointmentDate).toISOString()
+  const appointmentTime = appointment.appointmentTime
+  const appointmentDateTime = new Date(`${appDate.split('T')[0]}T${appointmentTime}:00`);
+  const appDate2 = new Date(appointment.appointmentDate).toISOString().split('T')[0]
 
-    // Get the current date and time
-    const currentDateTime = new Date();
+  // Get the current date and time
+  const currentDateTime = new Date();
 
-    // Check if the appointment date and time is in the future
-    const isAppointmentInFuture = appointmentDateTime > currentDateTime;
+  // Check if the appointment date and time is in the future
+  const isAppointmentInFuture = appointmentDateTime > currentDateTime;
 
-    if (isAppointmentInFuture) {
-        throw new BadRequestError("This appointment is in the future! can not be finished")
-    }
-    appointment.status = 'finished'
-    await appointment.save()
-    const patient = await User.findById(appointment.patientId)
-    const doc = await User.findById(docId)
-    doc.balance = doc.balance + 200
-    await doc.save()
+  if (isAppointmentInFuture) {
+    throw new BadRequestError("This appointment is in the future! can not be finished")
+  }
+  appointment.status = 'finished'
+  await appointment.save()
+  const patient = await User.findById(appointment.patientId)
+  const doc = await User.findById(docId)
+  doc.balance = doc.balance + 200
+  await doc.save()
 
-    const emailContent = `
+  const emailContent = `
   <!DOCTYPE html>
   <html>
     <head>
@@ -495,46 +495,46 @@ exports.appointmentFinish = async (req, res) => {
   </html>
 `;
 
-    await sendEmail(patient.mail, "Appointment Finished", emailContent)
-    const response = new ApiResponse({
-        msg: "Appointment finished successfully, Coins added to your account",
-        data: null,
-        statusCode: StatusCodes.OK,
-    });
-    res.status(response.statusCode).json(response);
+  await sendEmail(patient.mail, "Appointment Finished", emailContent)
+  const response = new ApiResponse({
+    msg: "Appointment finished successfully, Coins added to your account",
+    data: null,
+    statusCode: StatusCodes.OK,
+  });
+  res.status(response.statusCode).json(response);
 }
 
 exports.getMyAppointments = async (req, res) => {
-    const { page = 1, limit = 10 } = req.query; // Default to page 1 and 10 items per page
-    const docId = req.user.userId
+  const { page = 1, limit = 10 } = req.query; // Default to page 1 and 10 items per page
+  const docId = req.user.userId
 
-    // Convert page and limit to integers
-    const pageNumber = parseInt(page, 10);
-    const limitNumber = parseInt(limit, 10);
+  // Convert page and limit to integers
+  const pageNumber = parseInt(page, 10);
+  const limitNumber = parseInt(limit, 10);
 
-    // Calculate the skip value
-    const skip = (pageNumber - 1) * limitNumber;
+  // Calculate the skip value
+  const skip = (pageNumber - 1) * limitNumber;
 
-    const appointments = await Appointment.find({ status: 'accepted', doctorId: docId }).populate("patientId", "name gender dateOfBirth phone mail address healthStatus").skip(skip).limit(limitNumber);
+  const appointments = await Appointment.find({ status: 'accepted', doctorId: docId }).populate("patientId", "name gender dateOfBirth phone mail address healthStatus").skip(skip).limit(limitNumber);
 
-    if (!appointments) {
-        throw new NotFoundError("No pending appointments found for this doctor")
-    }
+  if (!appointments) {
+    throw new NotFoundError("No pending appointments found for this doctor")
+  }
 
-    const totalCount = await Appointment.countDocuments({ status: 'pending' });
+  const totalCount = await Appointment.countDocuments({ status: 'pending' });
 
-    const response = new ApiResponse({
-        msg: "My appointments retrieved successfully",
-        data: {
-            appointments: appointments,
-            metaData: {
-                totalItems: totalCount,
-                totalPages: Math.ceil(totalCount / limitNumber),
-                currentPage: pageNumber,
-                itemsPerPage: limitNumber,
-            },
-        },
-        statusCode: StatusCodes.OK,
-    });
-    res.status(response.statusCode).json(response);
+  const response = new ApiResponse({
+    msg: "My appointments retrieved successfully",
+    data: {
+      appointments: appointments,
+      metaData: {
+        totalItems: totalCount,
+        totalPages: Math.ceil(totalCount / limitNumber),
+        currentPage: pageNumber,
+        itemsPerPage: limitNumber,
+      },
+    },
+    statusCode: StatusCodes.OK,
+  });
+  res.status(response.statusCode).json(response);
 }
