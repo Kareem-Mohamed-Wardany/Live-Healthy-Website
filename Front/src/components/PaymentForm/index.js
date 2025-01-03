@@ -25,7 +25,6 @@ const PaymentForm = (props) => {
             const res = await axios.post('http://localhost:8080/purchase', {
                 amount, // Send the amount to the backend
             });
-            console.log(res)
             if (res.status > 201) {
                 createNotification("Not Authenticated", "error");
             }

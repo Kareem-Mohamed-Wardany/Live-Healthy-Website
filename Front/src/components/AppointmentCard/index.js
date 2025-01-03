@@ -1,4 +1,6 @@
 import React from "react";
+import formatDate from "../../util/formateData";
+import formatTime from "../../util/formatTime";
 
 const AppointmentCard = (props) => {
     const {
@@ -7,6 +9,7 @@ const AppointmentCard = (props) => {
         dateOfBirth,
         phone,
         mail,
+        address,
         healthStatus,
     } = props.patientId;
 
@@ -17,10 +20,10 @@ const AppointmentCard = (props) => {
             {/* Appointment Details */}
             <div>
                 <p className="text-gray-700">
-                    <span className="font-semibold">Date:</span> {props.appointmentDate}
+                    <span className="font-semibold">Date:</span> {formatDate(new Date(props.appointmentDate))}
                 </p>
                 <p className="text-gray-700">
-                    <span className="font-semibold">Time:</span> {props.appointmentTime}
+                    <span className="font-semibold">Time:</span> {formatTime(props.appointmentTime)}
                 </p>
                 <p className="text-gray-700">
                     <span className="font-semibold">Reason:</span> {props.reason}
@@ -38,13 +41,16 @@ const AppointmentCard = (props) => {
                 </p>
                 <p className="text-gray-700">
                     <span className="font-semibold">Date of Birth:</span>{" "}
-                    {new Date(dateOfBirth).toLocaleDateString()}
+                    {formatDate(new Date(dateOfBirth))}
                 </p>
                 <p className="text-gray-700">
                     <span className="font-semibold">Phone:</span> {phone}
                 </p>
                 <p className="text-gray-700">
                     <span className="font-semibold">Email:</span> {mail}
+                </p>
+                <p className="text-gray-700">
+                    <span className="font-semibold">Address:</span> {address}
                 </p>
             </div>
 
@@ -73,18 +79,34 @@ const AppointmentCard = (props) => {
 
             {/* Accept Button */}
             {
-                !props.cancel && <div className="flex justify-center">
+                !props.cancel &&
+                <div className="flex justify-center">
                     <button className="bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500" onClick={() => { props.handlebtn(props._id) }}>
                         Accept
                     </button>
                 </div>
             }
             {
-                props.cancel && <div className="flex justify-center">
-                    <button className="bg-red-600 text-white py-2 px-6 rounded-lg hover:bg-red-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500" onClick={() => { props.handlebtn(props._id) }}>
+                props.cancel &&
+                <div className="flex justify-center space-x-4">
+                    {/* Cancel Button */}
+                    <button
+                        className="bg-red-600 text-white py-2 px-6 rounded-lg hover:bg-red-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        onClick={(e) => { props.handlebtn(props._id, e) }}
+                        name="cancel"
+                    >
                         Cancel
                     </button>
+
+                    {/* Finished Button */}
+                    <button className="bg-green-600 text-white py-2 px-6 rounded-lg hover:bg-green-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        onClick={(e) => { props.handlebtn(props._id, e) }}
+                        name="finish"
+                    >
+                        Finished
+                    </button>
                 </div>
+
             }
 
         </div>

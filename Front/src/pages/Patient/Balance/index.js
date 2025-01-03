@@ -43,7 +43,6 @@ function Balance(props) {
                 }
             );
 
-            console.log(res)
             if (res.status === 200 || res.statusCode === 200) {
                 createNotification(`Payment successful! Add ${amount} coins for $${price / 100}`, "success");
                 setIsSuccessful(false)

@@ -20,7 +20,7 @@ const userSchema = new Schema({
     type: String,
     required: true,
     maxlength: [1000, 'Address must be at most 1000 characters long'],
-    minlength: [10, 'Address must be at least 10 characters long'],
+    minlength: [5, 'Address must be at least 5 characters long'],
   },
   phone: {
     type: String,

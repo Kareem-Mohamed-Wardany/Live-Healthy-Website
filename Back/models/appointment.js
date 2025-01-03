@@ -15,7 +15,7 @@ const appointmentSchema = new Schema({
             validator: function (v) {
                 return !isNaN(Date.parse(v)) && v > new Date();
             },
-            message: (props) => `${props.value} is not a valid Date!`,
+            message: (props) => `${props.value} is not a Date in past!`,
         },
     },
     appointmentTime: {
@@ -35,7 +35,7 @@ const appointmentSchema = new Schema({
     status: {
         type: String,
         default: 'pending',
-        enum: ['pending', 'accepted', 'cancelled']
+        enum: ['pending', 'accepted', 'finished']
     }
 });
 

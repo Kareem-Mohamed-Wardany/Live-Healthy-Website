@@ -44,7 +44,6 @@ const AddCenter = (props) => {
             body: JSON.stringify(data),
         })
         res = await res.json()
-        console.log(res)
         if (res.statusCode !== 201) {
             createNotification(res.msg, "error");
             return;

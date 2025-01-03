@@ -82,7 +82,6 @@ const Doctor = (props) => {
             props.createNotification("Account Created Successfully", "success");
             props.navigate("/");
         } else {
-            console.log(res)
             props.createNotification(res.msg, "error");
         }
         // Add your validation and submission logic here

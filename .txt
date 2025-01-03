@@ -1,0 +1,294 @@
+           {!found &&
+                <div className="flex justify-center items-center min-h-screenpx-4 sm:px-6 lg:px-8 mt-28 ">
+                    <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-lg">
+                        <h2 className="text-3xl font-semibold text-center text-gray-900 mb-8">
+                            {found ? "Appointment Booked" : "Book an Appointment"}
+                        </h2>
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            {/* Date Input */}
+                            <div>
+                                <label htmlFor="appointmentDate" className="block text-sm font-medium text-gray-700">
+                                    Date
+                                </label>
+                                <input
+                                    disabled={found}
+                                    type="date"
+                                    id="appointmentDate"
+                                    name="appointmentDate"
+                                    value={formData.appointmentDate}
+                                    onChange={handleChange}
+                                    className={`mt-1 block w-full border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${found ? "bg-gray-100 cursor-not-allowed" : "border-gray-300"
+                                        }`}
+                                    required
+                                />
+                            </div>
+
+                            {/* Time Input */}
+                            <div>
+                                <label htmlFor="appointmentTime" className="block text-sm font-medium text-gray-700">
+                                    Time
+                                </label>
+                                <input
+                                    disabled={found}
+                                    type="time"
+                                    id="appointmentTime"
+                                    name="appointmentTime"
+                                    value={formData.appointmentTime}
+                                    onChange={handleChange}
+                                    className={`mt-1 block w-full border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${found ? "bg-gray-100 cursor-not-allowed" : "border-gray-300"
+                                        }`}
+                                    required
+                                />
+                            </div>
+
+                            {/* Reason for Appointment */}
+                            <div>
+                                <label htmlFor="reason" className="block text-sm font-medium text-gray-700">
+                                    Reason for Appointment
+                                </label>
+                                <textarea
+                                    disabled={found}
+                                    id="reason"
+                                    name="reason"
+                                    value={formData.reason}
+                                    onChange={handleChange}
+                                    className={`mt-1 block w-full border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${found ? "bg-gray-100 cursor-not-allowed" : "border-gray-300"
+                                        }`}
+                                    rows="4"
+                                    required
+                                ></textarea>
+                            </div>
+
+                            {/* Submit Button */}
+                            <div className="space-y-4">
+                                {/* Button for Default State */}
+                                {appointmentStatus === "" && (
+                                    <button
+                                        type="submit"
+                                        className="w-full py-2 px-4 text-white font-semibold rounded-md shadow-md bg-indigo-600 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                                    >
+                                        Book Appointment
+                                    </button>
+                                )}
+                            </div>
+
+                        </form>
+                    </div>
+                </div>}
+            {found &&
+                <>
+                    {appointmentStatus === 'pending' ?
+                        <>
+                            <div className="flex justify-center items-center min-h-screenpx-4 sm:px-6 lg:px-8 mt-28 ">
+                                <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-lg">
+                                    <h2 className="text-3xl font-semibold text-center text-gray-900 mb-8">
+                                        {found ? "Appointment Booked" : "Book an Appointment"}
+                                    </h2>
+                                    <form onSubmit={handleSubmit} className="space-y-6">
+                                        {/* Date Input */}
+                                        <div>
+                                            <label htmlFor="appointmentDate" className="block text-sm font-medium text-gray-700">
+                                                Date
+                                            </label>
+                                            <input
+                                                disabled={found}
+                                                type="text"
+                                                id="appointmentDate"
+                                                name="appointmentDate"
+                                                value={formatDate(new Date(formData.appointmentDate))}
+                                                onChange={handleChange}
+                                                className={`mt-1 block w-full border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${found ? "bg-gray-100 cursor-not-allowed" : "border-gray-300"
+                                                    }`}
+                                                required
+                                            />
+                                        </div>
+
+                                        {/* Time Input */}
+                                        <div>
+                                            <label htmlFor="appointmentTime" className="block text-sm font-medium text-gray-700">
+                                                Time
+                                            </label>
+                                            <input
+                                                disabled={found}
+                                                type="time"
+                                                id="appointmentTime"
+                                                name="appointmentTime"
+                                                value={formData.appointmentTime}
+                                                onChange={handleChange}
+                                                className={`mt-1 block w-full border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${found ? "bg-gray-100 cursor-not-allowed" : "border-gray-300"
+                                                    }`}
+                                                required
+                                            />
+                                        </div>
+
+                                        {/* Reason for Appointment */}
+                                        <div>
+                                            <label htmlFor="reason" className="block text-sm font-medium text-gray-700">
+                                                Reason for Appointment
+                                            </label>
+                                            <textarea
+                                                disabled={found}
+                                                id="reason"
+                                                name="reason"
+                                                value={formData.reason}
+                                                onChange={handleChange}
+                                                className={`mt-1 block w-full border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 bg-gray-100 cursor-not-allowed resize-none"
+                                                    }`}
+                                                rows="4"
+                                                required
+                                            ></textarea>
+                                        </div>
+                                        {/* Submit Button */}
+                                        <div className="space-y-4">
+                                            {/* Button for Pending Appointment */}
+                                            {appointmentStatus === "pending" && (
+                                                <button
+                                                    type="submit"
+                                                    disabled={found}
+                                                    className={`w-full py-2 px-4 text-white font-semibold rounded-md shadow-md ${found
+                                                        ? "bg-gray-400 cursor-not-allowed"
+                                                        : "bg-yellow-500 hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-400 focus:outline-none"
+                                                        }`}
+                                                >
+                                                    Appointment Pending
+                                                </button>
+                                            )}
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </>
+                        :
+                        <>
+                            <div className="flex justify-center items-center min-h-screenpx-4 sm:px-6 lg:px-8 mt-28 ">
+                                <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-lg">
+                                    <h2 className="text-3xl font-semibold text-center text-gray-900 mb-8">
+                                        Appointment Booked
+                                    </h2>
+                                    <h2 className="text-2xl font-semibold text-center text-gray-900 mb-2">
+                                        Doctor Details
+                                    </h2>
+                                    <div>
+                                        <label htmlFor="appointmentDate" className="block text-sm font-medium text-gray-700">
+                                            Name
+                                        </label>
+                                        <input
+                                            disabled={found}
+                                            type="text"
+                                            value={formData.docData.name}
+                                            onChange={handleChange}
+                                            className={`mt-1 block w-full border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${found ? "bg-gray-100 cursor-not-allowed" : "border-gray-300"
+                                                }`}
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="appointmentDate" className="block text-sm font-medium text-gray-700">
+                                            Date
+                                        </label>
+                                        <input
+                                            disabled={found}
+                                            type="text"
+                                            id="appointmentDate"
+                                            name="appointmentDate"
+                                            value={formatDate(new Date(formData.appointmentDate))}
+                                            onChange={handleChange}
+                                            className={`mt-1 block w-full border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${found ? "bg-gray-100 cursor-not-allowed" : "border-gray-300"
+                                                }`}
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="appointmentDate" className="block text-sm font-medium text-gray-700">
+                                            Date
+                                        </label>
+                                        <input
+                                            disabled={found}
+                                            type="text"
+                                            id="appointmentDate"
+                                            name="appointmentDate"
+                                            value={formatDate(new Date(formData.appointmentDate))}
+                                            onChange={handleChange}
+                                            className={`mt-1 block w-full border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${found ? "bg-gray-100 cursor-not-allowed" : "border-gray-300"
+                                                }`}
+                                            required
+                                        />
+                                    </div>
+
+                                    <form onSubmit={handleSubmit} className="space-y-6">
+                                        {/* Date Input */}
+                                        <div>
+                                            <label htmlFor="appointmentDate" className="block text-sm font-medium text-gray-700">
+                                                Date
+                                            </label>
+                                            <input
+                                                disabled={found}
+                                                type="text"
+                                                id="appointmentDate"
+                                                name="appointmentDate"
+                                                value={formatDate(new Date(formData.appointmentDate))}
+                                                onChange={handleChange}
+                                                className={`mt-1 block w-full border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${found ? "bg-gray-100 cursor-not-allowed" : "border-gray-300"
+                                                    }`}
+                                                required
+                                            />
+                                        </div>
+
+                                        {/* Time Input */}
+                                        <div>
+                                            <label htmlFor="appointmentTime" className="block text-sm font-medium text-gray-700">
+                                                Time
+                                            </label>
+                                            <input
+                                                disabled={found}
+                                                type="time"
+                                                id="appointmentTime"
+                                                name="appointmentTime"
+                                                value={formData.appointmentTime}
+                                                onChange={handleChange}
+                                                className={`mt-1 block w-full border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${found ? "bg-gray-100 cursor-not-allowed" : "border-gray-300"
+                                                    }`}
+                                                required
+                                            />
+                                        </div>
+
+                                        {/* Reason for Appointment */}
+                                        <div>
+                                            <label htmlFor="reason" className="block text-sm font-medium text-gray-700">
+                                                Reason for Appointment
+                                            </label>
+                                            <textarea
+                                                disabled={found}
+                                                id="reason"
+                                                name="reason"
+                                                value={formData.reason}
+                                                onChange={handleChange}
+                                                className={`mt-1 block w-full border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 bg-gray-100 cursor-not-allowed resize-none"
+                                                    }`}
+                                                rows="4"
+                                                required
+                                            ></textarea>
+                                        </div>
+                                        {/* Submit Button */}
+                                        <div className="space-y-4">
+                                            {/* Button for Pending Appointment */}
+                                            {appointmentStatus === "accepted" && (
+                                                <button
+                                                    type="submit"
+                                                    disabled
+                                                    className={`w-full py-2 px-4 text-white font-semibold rounded-md shadow-md cursor-not-allowed bg-green-500  focus:ring-2 focus:ring-green-400 focus:outline-none"
+                                        }`}
+                                                >
+                                                    Appointment Accepted
+                                                </button>
+                                            )}
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </>
+                    }
+
+                </>
+
+            }

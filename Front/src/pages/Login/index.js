@@ -40,7 +40,7 @@ const Login = () => {
     })
     res = await res.json();
     if (res.statusCode === 200) {
-      console.log(res);
+
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userId", res.data.user.userId);
       const remainingMilliseconds = 60 * 60 * 1000;
@@ -48,7 +48,6 @@ const Login = () => {
         new Date().getTime() + remainingMilliseconds
       );
       localStorage.setItem("expiryDate", expiryDate.toISOString());
-      console.log("Navigating to /");
       navigate(0);
     } else {
       createNotification(res.msg, "error");

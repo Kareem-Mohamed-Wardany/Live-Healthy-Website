@@ -17,7 +17,6 @@ const Radiologist = (props) => {
                 );
                 if (res.status === 200) {
                     setRadioCenters(res.data.data);
-                    console.log(res);
                 }
             } catch (error) {
                 props.createNotification("Error fetching radiology centers", "error");
@@ -65,12 +64,10 @@ const Radiologist = (props) => {
             })
         }
         res = await res.json()
-        console.log(res)
         if (res.status === 201) {
             props.createNotification("Account Created Successfully", "success");
             props.navigate("/");
         } else {
-            console.log(res)
             props.createNotification(res.msg, "error");
         }
 

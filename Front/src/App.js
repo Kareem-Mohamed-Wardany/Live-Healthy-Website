@@ -45,7 +45,6 @@ function App() {
           const response = await axios.get(`http://localhost:8080/user/${userType.uId}`);
           if (response.status === 200) {
             setUser(response.data.data);
-            console.log(response.data.data);
           }
         } catch (error) {
           createNotification("Cannot retrieve User", "error");

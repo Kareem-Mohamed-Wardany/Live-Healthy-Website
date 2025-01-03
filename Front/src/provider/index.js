@@ -66,12 +66,6 @@ export const AppProvider = ({ children }) => {
     }
   }, []);
 
-  useEffect(() => {
-    if (!isLoggedIn) {
-      console.log(isLoading);
-    }
-  }, [isLoggedIn]);
-
   return (
     <AppContext.Provider
       value={{ createNotification, isLoading, setIsLoading }}

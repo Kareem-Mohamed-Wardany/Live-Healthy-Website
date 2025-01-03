@@ -54,12 +54,10 @@ const Patient = (props) => {
             })
         }
         res = await res.json()
-        console.log(res)
         if (res.statusCode === 201) {
             props.createNotification("Account Created Successfully", "success");
             props.navigate("/");
         } else {
-            console.log(res)
             props.createNotification(res.msg, "error");
         }
 

@@ -77,7 +77,6 @@ export function PurchaseVIP(props) {
                 }
             );
 
-            console.log(res)
             if (res.status === 401) {
                 createNotification("Not Authenticated", "error");
                 setIsSuccessful(false)
