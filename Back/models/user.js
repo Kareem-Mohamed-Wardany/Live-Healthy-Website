@@ -16,6 +16,12 @@ const userSchema = new Schema({
     required: true,
     enum: ['admin', 'patient', 'specialist', 'consultant', 'radiologist'],
   },
+  address: {
+    type: String,
+    required: true,
+    maxlength: [1000, 'Address must be at most 1000 characters long'],
+    minlength: [10, 'Address must be at least 10 characters long'],
+  },
   phone: {
     type: String,
     required: [true, 'Please provide phone number'],

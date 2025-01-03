@@ -58,6 +58,7 @@ const Radiologist = (props) => {
                     phone: props.phoneNumber,
                     dateOfBirth: new Date(props.startDate),
                     gender: props.gender,
+                    address: props.address,
                     id: center,
                     code: code,
                 }),

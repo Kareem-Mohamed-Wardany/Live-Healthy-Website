@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import logo from "../../assets/images/TitleImage.png";
-import CircleProg from "../../components/Progress/CircleProg";
 import DatePicker from "react-datepicker";
 import { useNavigate, Link } from "react-router-dom";
 
@@ -13,16 +12,15 @@ import Doctor from "./Doctor";
 import Radiologist from "./Radiologist";
 
 // import "./style.scss";
-import axios from "axios";
 const SignUp = () => {
   const navigate = useNavigate();
   const { createNotification } = useAppContext();
-  const [Phase, setPhase] = useState(1);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [gender, setGender] = useState("");
   const [accountType, setAccountType] = useState("");
@@ -66,16 +64,20 @@ const SignUp = () => {
       createNotification("Phone number must be 11 digits", "error");
       return false;
     }
+    if (!address) {
+      createNotification("Address is required", "error");
+      return false;
+    }
     if (!startDate) {
       createNotification("Date of Birth is required", "error");
       return false;
     }
-    if (!accountType) {
-      createNotification("User Type is required", "error");
-      return false;
-    }
     if (!gender) {
       createNotification("Gender is required", "error");
+      return false;
+    }
+    if (!accountType) {
+      createNotification("User Type is required", "error");
       return false;
     }
     return true;
@@ -130,6 +132,13 @@ const SignUp = () => {
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
             />
+            <textarea
+              className="outline-none w-full rounded-lg p-3 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-700 mb-2 resize-none"
+              type="text"
+              placeholder="Address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
 
             <div className="inputField">
               <DatePicker
@@ -179,6 +188,7 @@ const SignUp = () => {
                   phoneNumber={phoneNumber}
                   startDate={startDate}
                   gender={gender}
+                  address={address}
                   createNotification={createNotification}
                   navigate={navigate}
                 />
@@ -196,6 +206,7 @@ const SignUp = () => {
                   phoneNumber={phoneNumber}
                   startDate={startDate}
                   gender={gender}
+                  address={address}
                   createNotification={createNotification}
                   navigate={navigate}
                 />
@@ -214,6 +225,7 @@ const SignUp = () => {
                   phoneNumber={phoneNumber}
                   startDate={startDate}
                   gender={gender}
+                  address={address}
                   createNotification={createNotification}
                   navigate={navigate}
                 />
@@ -231,6 +243,7 @@ const SignUp = () => {
                   phoneNumber={phoneNumber}
                   startDate={startDate}
                   gender={gender}
+                  address={address}
                   createNotification={createNotification}
                   navigate={navigate}
                 />

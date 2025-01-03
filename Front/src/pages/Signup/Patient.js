@@ -39,6 +39,7 @@ const Patient = (props) => {
                     phone: props.phoneNumber,
                     dateOfBirth: new Date(props.startDate),
                     gender: props.gender,
+                    address: props.address,
                     healthStatus: {
                         bloodType: bloodType,
                         smoker: isSmoker,

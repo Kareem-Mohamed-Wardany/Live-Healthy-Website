@@ -63,6 +63,7 @@ const Doctor = (props) => {
         formData.append("accountType", props.accountType);
         formData.append("phone", props.phoneNumber);
         formData.append("dateOfBirth", new Date(props.startDate));
+        formData.append("address", props.address);
         formData.append("gender", props.gender);
         formData.append("university", university);
         formData.append("IDFront", files.IDFront);

@@ -9,8 +9,14 @@ const appointmentSchema = new Schema({
         required: true
     },
     appointmentDate: {
-        type: String,
-        required: [true, "Provide Appointment Date"]
+        type: Date,
+        required: [true, 'Please provide Appointment Date'],
+        validate: {
+            validator: function (v) {
+                return !isNaN(Date.parse(v)) && v > new Date();
+            },
+            message: (props) => `${props.value} is not a valid Date!`,
+        },
     },
     appointmentTime: {
         type: String,
