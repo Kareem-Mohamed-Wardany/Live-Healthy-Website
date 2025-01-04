@@ -13,7 +13,6 @@ import Patient from "./pages/Patient";
 import Balance from "./pages/Patient/Balance";
 import { Chat } from "./pages/Patient/Chat";
 import { Appointment } from "./pages/Patient/Appointment";
-import { Prescriptions } from "./pages/Patient/Prescriptions";
 import { PurchaseVIP } from "./pages/Patient/PurchaseVIP";
 import Admin from "./pages/Admin";
 import AddCenter from "./pages/Admin/AddCenter";
@@ -97,7 +96,6 @@ function App() {
                         <Route path="/mycoins" element={<Balance user={user} />} />
                         <Route path="/chat" element={<Chat user={user} />} />
                         <Route path="/appointment" element={<Appointment user={user} />} />
-                        <Route path="/myprescriptions" element={<Prescriptions user={user} />} />
                         <Route path="/purchasevip" element={<PurchaseVIP user={user} />} />
                         <Route path="*" element={<Navigate to="/" />} />
                       </>
@@ -119,8 +117,6 @@ function App() {
                         <Route path="/chats" element={<AllChats user={user} />} />
                         <Route path="/:id" element={<DChat user={user} />} />
                         <Route path="/patients" element={<AssignChat user={user} />} />
-                        {/*<Route path="/centers" element={<Centers user={user} />} />
-                        <Route path="/doctors" element={<Doctors user={user} />} /> */}
                         <Route path="*" element={<Navigate to="/" />} />
                       </>
                       : null

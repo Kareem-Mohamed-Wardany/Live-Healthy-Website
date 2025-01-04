@@ -30,6 +30,16 @@ const chatSchema = new mongoose.Schema({
         required: true,
         minlength: [10, 'Reason must be at least 10 characters long'],
         maxlength: [1000, 'Reason must be at most 1000 characters long'],
+    },
+    endChat: {
+        patient: {
+            type: Boolean,
+            default: false
+        },
+        doctor: {
+            type: Boolean,
+            default: false
+        }
     }
 });
 module.exports = mongoose.model("Chat", chatSchema);

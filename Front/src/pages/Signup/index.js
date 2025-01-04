@@ -9,7 +9,6 @@ import { useAppContext } from "../../provider/index";
 
 import Patient from "./Patient";
 import Doctor from "./Doctor";
-import Radiologist from "./Radiologist";
 
 // import "./style.scss";
 const SignUp = () => {
@@ -216,24 +215,6 @@ const SignUp = () => {
             {accountType === "consultant" && (
               <>
                 <Doctor
-                  validate={validate}
-                  accountType={accountType}
-                  email={email}
-                  password={password}
-                  firstName={firstName}
-                  lastName={lastName}
-                  phoneNumber={phoneNumber}
-                  startDate={startDate}
-                  gender={gender}
-                  address={address}
-                  createNotification={createNotification}
-                  navigate={navigate}
-                />
-              </>
-            )}
-            {accountType === "radiologist" && (
-              <>
-                <Radiologist
                   validate={validate}
                   accountType={accountType}
                   email={email}

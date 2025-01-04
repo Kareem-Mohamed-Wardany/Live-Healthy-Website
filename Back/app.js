@@ -8,6 +8,8 @@ const { Server } = require("socket.io");
 require("dotenv").config();
 require("express-async-errors");
 const stripe = require("stripe")(process.env.STRIPE_KEY); // Use your actual Stripe secret key
+const sendEmail = require('./util/mailer')
+const User = require("./models/user");
 
 // error handlers
 const notFoundMiddleware = require("./middleware/not-found");
@@ -122,6 +124,163 @@ io.on("connection", (socket) => {
     if (onlineUsers.has(receiver)) {
       const receiverSocketId = onlineUsers.get(receiver);
       io.to(receiverSocketId).emit("receive-message", { sender, message, timestamp });
+    }
+  });
+  socket.on("endChatRequest", async ({ chatId, userId }) => {
+    const chat = await Chat.findById(chatId)
+
+    // Assign user agreement
+    if (userId.toString() === chat.patientId.toString()) {
+      chat.endChat.patient = true;
+      await chat.save()
+    } else if (userId.toString() === chat.doctorId.toString()) {
+      chat.endChat.doctor = true;
+      await chat.save()
+    }
+    if (chat.endChat.patient && chat.endChat.doctor) {
+      chat.status = "finished";
+      await chat.save()
+      const doc = await User.findById(chat.doctorId)
+      doc.balance = doc.balance + 100
+      await doc.save()
+      const patient = await User.findById(chat.patientId)
+      const patientHTML = `
+          <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #333333;
+        }
+        .container {
+          width: 100%;
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          border: 1px solid #eeeeee;
+          border-radius: 8px;
+          background-color: #f9f9f9;
+        }
+        .header {
+          text-align: center;
+          border-bottom: 1px solid #eeeeee;
+          margin-bottom: 20px;
+        }
+        .header h1 {
+          color: #0078D7;
+        }
+        .content {
+          text-align: left;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 20px;
+          font-size: 12px;
+          color: #888888;
+        }
+        .button {
+          display: inline-block;
+          padding: 10px 20px;
+          margin-top: 20px;
+          background-color: #0078D7;
+          color: #ffffff;
+          text-decoration: none;
+          border-radius: 5px;
+        }
+        .button:hover {
+          background-color: #005BB5;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Chat Ended</h1>
+        </div>
+        <div class="content">
+          <p>Dear <strong>${patient.name}</strong>,</p>
+          <p>The chat session with Dr. ${doc.name} has been successfully ended. If you have further questions or need additional assistance, feel free to schedule an appointment at your convenience.</p>
+          <p>Thank you for trusting us with your care.</p>
+          <a href="${process.env.PLATFORM_URL}/appointment" class="button">Schedule New Appointment</a>
+        </div>
+        <div class="footer">
+          <p>&copy; 2025 Your Healthcare Provider. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+    `
+      const docHTML = `<!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #333333;
+        }
+        .container {
+          width: 100%;
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          border: 1px solid #eeeeee;
+          border-radius: 8px;
+          background-color: #f9f9f9;
+        }
+        .header {
+          text-align: center;
+          border-bottom: 1px solid #eeeeee;
+          margin-bottom: 20px;
+        }
+        .header h1 {
+          color: #0078D7;
+        }
+        .content {
+          text-align: left;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 20px;
+          font-size: 12px;
+          color: #888888;
+        }
+        .button {
+          display: inline-block;
+          padding: 10px 20px;
+          margin-top: 20px;
+          background-color: #0078D7;
+          color: #ffffff;
+          text-decoration: none;
+          border-radius: 5px;
+        }
+        .button:hover {
+          background-color: #005BB5;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Chat Ended</h1>
+        </div>
+        <div class="content">
+          <p>Dear <strong>${doc.name}</strong>,</p>
+          <p>The chat session with $${patient.name} has been successfully ended. Please ensure all necessary follow-ups are recorded in the patient's file. If additional action is required, please inform the patient or the administration team.</p>
+          <p>Thank you for your continued dedication to patient care.</p>
+          <a href="${process.env.PLATFORM_URL}/chats" class="button">Chat With New Patiens</a>
+        </div>
+        <div class="footer">
+          <p>&copy; 2025 Your Healthcare Provider. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+    `
+      sendEmail(patient.mail, "Chat Ended Successfully", patientHTML)
+      sendEmail(doc.mail, "Chat Ended Successfully", docHTML)
     }
   });
 

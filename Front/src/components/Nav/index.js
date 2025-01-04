@@ -64,14 +64,6 @@ const Nav = (props) => {
                             </li>
                             <li>
                                 <a
-                                    href="/myprescriptions"
-                                    className={`hover:text-blue-400 ${location.pathname === "/myprescriptions" ? "text-blue-500 font-bold" : ""}`}
-                                >
-                                    Prescriptions
-                                </a>
-                            </li>
-                            <li>
-                                <a
                                     href="/mycoins"
                                     className={`hover:text-blue-400 ${location.pathname === "/mycoins" ? "text-blue-500 font-bold" : ""}`}
                                 >
@@ -154,14 +146,6 @@ const Nav = (props) => {
                                         className={`hover:text-blue-400 ${location.pathname === "/purchasevip" ? "text-blue-500 font-bold" : ""}`}
                                     >
                                         Purchase VIP
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        href="/myprescriptions"
-                                        className={`hover:text-blue-400 ${location.pathname === "/myprescriptions" ? "text-blue-500 font-bold" : ""}`}
-                                    >
-                                        Prescriptions
                                     </a>
                                 </li>
                                 <li>
@@ -399,7 +383,6 @@ const Nav = (props) => {
             </> : (null)
             }
         </>
-
     )
 }
 

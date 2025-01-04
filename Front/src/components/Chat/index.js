@@ -12,6 +12,11 @@ const ChatComponent = (props) => {
             props.handleSendMessage();
         }
     };
+
+    const handleEnd = () => {
+        props.setEndChat(true)
+    }
+
     return (
         <div className="bg-gray-100 p-6 rounded-lg shadow-md max-w-3xl mx-auto">
             <h3 className="text-2xl font-semibold text-center mb-4">Chat with {props.name}</h3>
@@ -42,6 +47,12 @@ const ChatComponent = (props) => {
                     className="ml-3 p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none"
                 >
                     Send
+                </button>
+                <button
+                    onClick={handleEnd}
+                    className="ml-3 p-3 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none"
+                >
+                    End
                 </button>
             </div>
         </div>
